@@ -637,7 +637,26 @@ body, html {
 
 .sidebar {
   width: 300%;
-  background: #000; /* чёрный как в терминале */
+   background: linear-gradient(145deg, #3a3a3a, #1a1a1a);
+   border-left: 6px solid #555; /* Толстая рамка слева */
+    border-right: 3px solid #222; /* Тонкая рамка справа */
+    border-top: 3px solid #444; /* Рамка сверху */
+    border-bottom: 3px solid #000; /* Рамка снизу */
+    box-shadow: inset -8px 8px 15px rgba(0, 0, 0, 0.6), /* Внутренняя тень */
+                8px 0 15px rgba(0, 0, 0, 0.4); /* Наружная тень справа */
+                  background: linear-gradient(135deg, #2e2e2e, #1a1a1a);
+    border-left: 6px solid #555;
+    border-right: 3px solid #111;
+    border-top: 3px solid #333;
+    border-bottom: 3px solid #000;
+
+    /* Многоуровневая тень для псевдо-глубины */
+    box-shadow:
+        5px 0 10px rgba(0, 0, 0, 0.5), /* Основная тень сбоку */
+        10px 0 20px rgba(0, 0, 0, 0.4), /* Более глубокий слой */
+        15px 0 30px rgba(0, 0, 0, 0.3), /* Ещё глубже */
+        inset -5px 0 10px rgba(255, 255, 255, 0.05); /* Легкий световой блик внутри */
+    z-index: 10; /* Слой, можно регулировать */
   color: #00ff66; /* типичный "кибер-зелёный" */
   font-family: 'Share Tech Mono', monospace;
   padding: 30px;
@@ -1635,3 +1654,6 @@ canvas {
 .container_image {
   position: relative;
 }
+
+
+

@@ -237,10 +237,16 @@ const startBiosSequence = () => {
   <p>Youtube: <a href="https://www.youtube.com/@SILAMPIX" target="_blank">SILAMPIX</a></p>
    <div class="button-panel">
     <div class="terminal">
-       <div class="teletype-terminal">
+       <div class="terminal">
+  <div class="teletype-terminal">
     <div class="paper" id="terminal-paper"></div>
     <div class="input-line" id="input-line">> <span class="cursor">&nbsp;</span></div>
   </div>
+</div>
+
+
+
+
 <script>
     const paper = document.getElementById("terminal-paper");
     const inputLine = document.getElementById("input-line");
@@ -287,6 +293,13 @@ const startBiosSequence = () => {
       printLine("- version — показать версию SCP-OS");
       printLine("- books — Скачать документ");
       printLine("- fortune — получить случайную истину");
+      printLine("- matrix - Запускает эффект матрицы")
+      printLine("- redalert - Активирует режим тревоги с глитч-эффектом")
+      printLine("- hackerman - Включает хакерский интерфейс")
+      printLine("- decode - Декодирует секретное сообщение")
+      printLine("- rick - Сюрприз для настоящих исследователей")
+      printLine("- asciiart - Показывает ASCII-арт SCP")
+      printLine("- snake - Запускает snake.exe")
       break;
 
     case "bio":
@@ -337,6 +350,56 @@ const startBiosSequence = () => {
       printLine("! " + msg);
       break;
 
+      case "matrix":
+        printLine("Инициализация матричного протокола...");
+        launchMatrix();
+        break;
+        
+      case "redalert":
+        const alertLine = document.createElement('div');
+        alertLine.innerHTML = '<span class="blink glitch">ТРЕВОГА! СИСТЕМА ВЗЛОМАНА</span>';
+        paper.appendChild(alertLine);
+        playAlert();
+        break;
+        
+      case "hackerman":
+        printLine("Активация 1337-режима...");
+        document.body.style.backgroundColor = '#000';
+        document.body.style.color = '#0f0';
+        break;
+        
+      case "decode":
+        printLine("Декодирование SCP-8888...", 100);
+        setTimeout(() => {
+          const encoded = "U0NQIC0gU2VjdXJlLCBDb250YWluLCBQcm90ZWN0";
+          printLine(atob(encoded));
+        }, 2000);
+        break;
+        
+      case "rick":
+        const video = document.createElement('iframe');
+        video.width = 0;
+        video.height = 0;
+        video.src = 'https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1';
+        document.body.appendChild(video);
+        break;
+        
+      case "asciiart":
+        printLine("░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
+        printLine("░░███░█░█░████░█░░█░████░█░░█░");
+        printLine("░░█░░░█░█░█░░░░█░░█░█░░░░█░█░░");
+        printLine("░░███░████░███░████░███░░██░░░");
+        printLine("░░█░░░█░░█░░░░█░█░░█░█░░░░█░█░░");
+        printLine("░░█░░░█░░█░████░█░░█░████░█░░█░");
+        printLine("░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░");
+        break;
+
+    case "snake.exe":
+    case "snake":
+      printLine("Запуск игры Змейка...");
+      launchSnakeGame();
+      break;
+
     default:
       printLine("Неизвестная команда. Введите 'help'.");
   }
@@ -362,6 +425,63 @@ const startBiosSequence = () => {
       window.focus();
       printLine("Добро пожаловать в SCP-ФОНД терминал. Введите 'help'.");
     };
+
+     // Добавляем новые функции
+  function launchMatrix() {
+    const overlay = document.createElement('div');
+    overlay.className = 'matrix-overlay';
+    document.body.appendChild(overlay);
+
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*';
+    const columns = Math.floor(window.innerWidth / 20);
+    
+    function rain() {
+      const ch = chars[Math.floor(Math.random() * chars.length)];
+      const x = Math.floor(Math.random() * window.innerWidth);
+      const element = document.createElement('div');
+      
+      element.style.position = 'absolute';
+      element.style.left = x + 'px';
+      element.style.color = '#0f0';
+      element.textContent = ch;
+      
+      overlay.appendChild(element);
+      
+      let y = 0;
+      const fall = () => {
+        y += 2;
+        element.style.top = y + 'px';
+        if(y < window.innerHeight) {
+          requestAnimationFrame(fall);
+        } else {
+          element.remove();
+        }
+      };
+      requestAnimationFrame(fall);
+    }
+    
+    const matrixInterval = setInterval(rain, 50);
+    setTimeout(() => {
+      clearInterval(matrixInterval);
+      overlay.remove();
+    }, 5000);
+  }
+
+  function playAlert() {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    oscillator.type = 'square';
+    oscillator.frequency.setValueAtTime(440, audioCtx.currentTime);
+    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+
+    oscillator.start();
+    setTimeout(() => oscillator.stop(), 200);
+  }
   </script>
 
 
@@ -411,10 +531,10 @@ const startBiosSequence = () => {
             
             <div class="security-container">
                 <div class="navigation-panel">
-                    <div class="nav-item selected" data-url="../Mysite/project.html"> <a href="../Mysite/project.html">PROJECTS</a></div>
-                    <div class="nav-item" data-url="donate.html"> <a href="../Mysite/project.html">DONATE</a></div>
-                    <div class="nav-item" data-url="about.html"> <a href="../Mysite/project.html">UPDATES</a></div>
-                    <div class="nav-item" data-url="contact.html"> <a href="../Mysite/project.html">REGISTRY</a></div>
+                    <div class="nav-item selected" data-url="./html/project.html"> <a href="#">PROJECTS</a></div>
+                    <div class="nav-item" data-url="./html/donate.html"> <a href="#">DONATE</a></div>
+                    <div class="nav-item" data-url="./html/updates.html"> <a href="#">UPDATES</a></div>
+                    <div class="nav-item" data-url="./html/registry.html"> <a href="#">REGISTRY</a></div>
                 </div>
                 
                 <div class="confirmation-panel">
@@ -770,7 +890,7 @@ setInterval(() => {
 <main>
   <div class="content">
         <div class="logo-text">
-                <img src="../Mysite/icon/Scp(1).svg" alt="SCP" width="100" height="100">
+                <img src="./icon/Scp(1).svg" alt="SCP" width="100" height="100">
     </div>
     <div class="scp-box">
       <h2>Объект №: SCP-8888</h2>
