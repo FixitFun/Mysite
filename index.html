@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>FixitFun</title>
+    <link rel="stylesheet" href="../Mysite/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <script src="../Mysite/js/time.js"></script>
+    <audio id="click-sound" src="../Mysite/sound/negromkiy-korotkiy-klik.mp3" preload="auto"></audio>
+    <audio id="poweroff-sound" src="../Mysite/sound/Звук выключения экрана.mp3" preload="auto"></audio>
+    <audio id="bios-sound" src="../Mysite/sound/Включение ноутбука шум вентиляторов выключение.mp3" preload="auto"></audio>
+    <audio id="boot-sound" src="../Mysite/sound/15949.mp3" preload="auto"></audio>
+    <link rel="shortcut icon" href="../Mysite/icon/бум.png" type="image/png">
+</head>
+<body>
+
+  
+<!-- Кнопка запуска -->
+<div id="start-screen" style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+">
+    <button id="start-btn" style="
+        padding: 15px 30px;
+        background: #001100;
+        border: 2px solid #00ff66;
+        color: #00ff66;
+        font-family: 'Courier New', monospace;
+        cursor: pointer;
+        font-size: 1.2rem;
+    ">
+        ▶ START SYSTEM
+    </button>
+</div>
+  
+ <!-- BIOS ЭКРАН -->
+  <div id="bios-screen" style="display: none;">
+    <pre id="bios-text"></pre>
+  </div>
+
+  <!-- ЗАГРУЗКА ОС -->
+ <div id="os-boot-screen" style="display: none;">
+  <!-- Добавляем контейнер для ЭЛТ-эффектов -->
+  <div class="crt-overlay">
+    <div class="crt-screen">
+      <div class="os-logo">
+        <img src="../Mysite/icon/scp.gif" alt="SCP Logo">
+      </div>
+      <div class="fnaf-loader-container">
+        <div class="fnaf-loader"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+  <script>
+
+    // Инициализация элементов
+const startScreen = document.getElementById('start-screen');
+const startBtn = document.getElementById('start-btn');
+
+// Показываем только кнопку при загрузке
+window.addEventListener('DOMContentLoaded', () => {
+    startScreen.style.display = 'flex'; // Принудительно показываем
+    document.querySelector('.container').style.display = 'none';
+});
+
+// Обработчик кнопки
+startBtn.addEventListener('click', async () => {
+    startScreen.style.display = 'none';
+    
+    try {
+        await biosSound.play();
+        startBiosSequence();
+    } catch(e) {
+        console.error('Audio error:', e);
+        startBiosSequence();
+    }
+});
+
+    let userInteracted = false;
+
+    document.body.addEventListener('click', async () => {
+    if (!userInteracted) {
+        userInteracted = true;
+        try {
+            await biosSound.play();
+        } catch(e) {
+            console.error('Audio playback error:', e);
+        }
+        startBiosSequence();
+    }
+});
+
+const startBiosSequence = () => {
+    biosScreen.style.display = "block";
+    showNextLine();
+} 
+  const biosLines = [
+    "FIXITFUN BIOS v0.8.7 (c) 1998-2025 Foundation Systems",
+    "Initializing system hardware...",
+    "Memory Test: 262144K OK",
+    "Detecting IDE Drives...",
+    "Primary Master: SCP-8000.CONTAINED",
+    "Primary Slave : NONE",
+    "Secondary Master: USER_PROFILE.DAT",
+    "Secondary Slave: NONE",
+    "",
+    "Loading RETRO-UX Interface...",
+    "Loading CRYPTO LAYER ██████████ 100%",
+    "Decryption Key Accepted...",
+    "System Status: STABLE",
+    "Boot Sequence Complete. Launching...",
+    "",
+    "RETRO-OS v3.14.15",
+    "Mounting filesystems...",
+    "Loading kernel modules...",
+    "Initializing GUI subsystem...",
+    "Starting background services...",
+    "Loading desktop environment...",
+    "Welcome to SCP-OS"
+  ];
+
+  const biosScreen = document.getElementById("bios-screen");
+  const osBootScreen = document.getElementById("os-boot-screen");
+  const mainUI = document.getElementById("main-ui");
+  const biosText = document.getElementById("bios-text");
+
+  const biosSound = document.getElementById("bios-sound");
+  const bootSound = document.getElementById("boot-sound");
+
+  let i = 0;
+
+  function showNextLine() {
+    if (i < biosLines.length) {
+      biosText.textContent += biosLines[i] + "\n";
+      i++;
+      setTimeout(showNextLine, 300);
+    } else {
+      // BIOS завершён → OS Boot
+      setTimeout(() => {
+        biosScreen.style.display = "none";
+        showOSBoot();
+      }, 1500);
+    }
+  }
+
+  
+
+  function showOSBoot() {
+    osBootScreen.style.display = "flex";
+    if (userInteracted) {
+        bootSound.play().catch(e => console.error('Boot sound error:', e));
+    }
+    
+    setTimeout(() => {
+        osBootScreen.style.display = "none";
+        document.querySelector('.container').style.display = 'block'; // Показываем основной контент
+    }, 5000);
+}
+</script>     
+
+   <div class="crt-effect"></div>
+    
+    <div class="container" style="display: none;">
+        <div class="terminal-header">
+            <img src="https://media.tenor.com/LNnibTM5YEMAAAAj/scp.gif" 
+                 class="scp-logo" 
+                 alt="SCP Foundation">
+            <div>
+                <h2>SECURE. CONTAIN. PROTECT.</h2>
+                <p>v3.1.4 | STATUS: <span class="status-text">OPERATIONAL</span></p>
+            </div>
+        </div>
+
+ <script>
+        // Динамическое обновление статуса
+        const statusText = document.querySelector('.status-text');
+        const statusMessages = [
+            'GOOD'
+        ];
+
+        setInterval(() => {
+            const randomStatus = statusMessages[Math.floor(Math.random() * statusMessages.length)];
+            statusText.textContent = randomStatus;
+            statusText.style.color = Math.random() > 0.5 ? '#0f0' : '#f00';
+        }, 5000);
+
+
+        // Случайные помехи
+        setInterval(() => {
+            if(Math.random() < 0.2) {
+                document.body.style.filter = `hue-rotate(${Math.random() * 30}deg)`;
+                setTimeout(() => document.body.style.filter = '', 100);
+            }
+        }, 3000);
+    </script>
+
+
+<div class="main-layout">
+<aside class="sidebar">
+  <div class="profile-section">
+  <h3>Оператор</h3>
+  <p>Имя: FixitFun</p>
+  <p>Роль: Инди-разработчик</p>
+  <p>Статус:  АКТИВЕН  <span class="status-dot"></span></p>
+
+  <p>Объектов в разработке: 1</p>
+</div>
+
+<div class="skills-section">
+  <h3>Навыки</h3>
+  <ul>
+    <li>C# / Unity</li>
+    <li>Lua / GMod</li>
+    <li>Blender</li>
+    <li>FL Studio</li>
+    <li>DaVinci Resolve</li>
+  </ul>
+</div>
+
+<div class="contact-section">
+  <h3>Связь</h3>
+  <p>GitHub: <a href="https://github.com/FixitFun" target="_blank">FixitFun</a></p>
+  <p>Telegram: <a href="https://t.me/Silampix" target="_blank">SILAMPIX</a></p>
+  <p>Email: <span>telexiaomine@gmail.com</span></p>
+  <p>Youtube: <a href="https://www.youtube.com/@SILAMPIX" target="_blank">SILAMPIX</a></p>
+   <div class="button-panel">
+    <div class="terminal">
+       <div class="teletype-terminal">
+    <div class="paper" id="terminal-paper"></div>
+    <div class="input-line" id="input-line">> <span class="cursor">&nbsp;</span></div>
+  </div>
+<script>
+    const paper = document.getElementById("terminal-paper");
+    const inputLine = document.getElementById("input-line");
+    let commandBuffer = "";
+
+    function updateInput() {
+      inputLine.innerHTML = `> ${commandBuffer}<span class="cursor">&nbsp;</span>`;
+    }
+
+    function printLine(text, delay = 0) {
+      let i = 0;
+      const line = document.createElement("div");
+      paper.appendChild(line);
+
+      function typeChar() {
+        if (i < text.length) {
+          line.textContent += text[i++];
+          setTimeout(typeChar, delay);
+        } else {
+          paper.scrollTop = paper.scrollHeight;
+        }
+      }
+
+      if (delay > 0) {
+        typeChar();
+      } else {
+        line.textContent = text;
+        paper.scrollTop = paper.scrollHeight;
+      }
+    }
+
+    function processCommand(cmd) {
+  switch (cmd) {
+    case "help":
+      printLine("Доступные команды:");
+      printLine("- help — показать команды");
+      printLine("- bio — кто ты, воин?");
+      printLine("- scp-8888-a — ?");
+      printLine("- projects — список проектов");
+      printLine("- clear — очистить экран");
+      printLine("- scp8888 — данные засекречены");
+      printLine("- sudo — получить права доступа");
+      printLine("- coffee — ☕");
+      printLine("- version — показать версию SCP-OS");
+      printLine("- books — Скачать документ");
+      printLine("- fortune — получить случайную истину");
+      break;
+
+    case "bio":
+      printLine("FixitFun — инди-разработчик, SCP-8888, спец по стилю, кодингу и атмосфере.");
+      break;
+
+      case "scp-8888-a":
+      printLine("Мы пока не знаем его аномальных свойств.");
+      break;
+
+    case "projects":
+      printLine("Crazy-Ride - [ДАННЫЕ УДАЛЕНЫ]");
+      break;
+
+    case "clear":
+      paper.innerHTML = "";
+      break;
+
+    case "scp8888":
+      printLine("[ACCESS DENIED] Уровень допуска недостаточен.");
+      break;
+
+    case "sudo":
+      printLine("⛔ Доступ запрещён. Тебе что, root приснился?");
+      break;
+
+    case "coffee":
+      printLine("Завариваю виртуальный кофе... ☕ Готово! Наслаждайся, бро.");
+      break;
+
+    case "version":
+      printLine("SCP-OS v3.14.15 — Build 8000.1 (Top Secret)");
+      break;
+
+      case "books":
+      printLine("Скачать документ");
+      break;
+
+    case "fortune":
+      const fortunes = [
+        "Если код работает — не трогай его.",
+        "Тот, кто дебажит в 3 ночи, обречён.",
+        "git push --force — последние слова известного разработчика.",
+        "Каждый баг — это просто фича в плохом костюме.",
+        "Перекомпилируй — и всё наладится... или нет."
+      ];
+      const msg = fortunes[Math.floor(Math.random() * fortunes.length)];
+      printLine("! " + msg);
+      break;
+
+    default:
+      printLine("Неизвестная команда. Введите 'help'.");
+  }
+}
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
+        commandBuffer += e.key;
+        updateInput();
+      } else if (e.key === "Backspace") {
+        commandBuffer = commandBuffer.slice(0, -1);
+        updateInput();
+      } else if (e.key === "Enter") {
+        printLine("> " + commandBuffer);
+        processCommand(commandBuffer.trim().toLowerCase());
+        commandBuffer = "";
+        updateInput();
+      }
+    });
+
+    // Первичный фокус — чтобы сразу можно было вводить
+    window.onload = () => {
+      window.focus();
+      printLine("Добро пожаловать в SCP-ФОНД терминал. Введите 'help'.");
+    };
+  </script>
+
+
+      <div class="psi-indicator">
+        <div class="psi-bar" style="width: 72%"></div>
+        <span class="psi-label">PSI: 72%</span>
+    </div>
+   
+</div>
+  
+<script>
+    // Анимация PSI-индикатора
+    setInterval(() => {
+        const psi = Math.floor(Math.random() * 20 + 60);
+        document.querySelector('.psi-bar').style.width = `${psi}%`;
+        document.querySelector('.psi-label').textContent = `PSI: ${psi}%`;
+    }, 2000);
+</script>
+
+<audio id="select-sound" src="https://assets.mixkit.co/active_storage/sfx/2591/2591-preview.mp3"></audio>
+    <audio id="confirm-sound" src="https://assets.mixkit.co/active_storage/sfx/2572/2572-preview.mp3"></audio>
+    <audio id="error-sound" src="https://assets.mixkit.co/active_storage/sfx/2588/2588-preview.mp3"></audio>
+    
+ <!-- Статусные элементы -->
+    <div class="status-indicators">
+        <div class="status-indicator" onclick="openModal()">
+            <span class="led led-green"></span> TERMINAL ACCESS
+        </div>
+    </div>
+
+    <!-- Модальное окно -->
+    <div id="fnaf-modal" class="fnaf-modal">
+        <div class="bg-warnings">
+            <div class="warning-text rotate-15">[SECURITY LOCK]</div>
+            <div class="warning-text rotate-345">[RESTRICTED]</div>
+        </div>
+
+        <div class="crt-overlay"></div>
+        <div class="static-overlay"></div>
+
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">⨯</span>
+            
+            <h1 class="glitch-title" style="padding: 30px; margin: 0; animation: glitch 2s infinite">
+                SYSTEM NAVIGATION
+            </h1>
+            
+            <div class="security-container">
+                <div class="navigation-panel">
+                    <div class="nav-item selected" data-url="../Mysite/project.html"> <a href="../Mysite/project.html">PROJECTS</a></div>
+                    <div class="nav-item" data-url="donate.html"> <a href="../Mysite/project.html">DONATE</a></div>
+                    <div class="nav-item" data-url="about.html"> <a href="../Mysite/project.html">UPDATES</a></div>
+                    <div class="nav-item" data-url="contact.html"> <a href="../Mysite/project.html">REGISTRY</a></div>
+                </div>
+                
+                <div class="confirmation-panel">
+                    <button class="confirm-btn" onclick="navigateToSelected()">
+                        EXECUTE SELECTION [ENTER]
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    let currentSelection = 0;
+    const navItems = document.querySelectorAll('.nav-item');
+    const modal = document.getElementById('fnaf-modal');
+    
+    // Звуковые эффекты
+    const sounds = {
+        select: new Audio('https://assets.mixkit.co/active_storage/sfx/2591/2591-preview.mp3'),
+        confirm: new Audio('https://assets.mixkit.co/active_storage/sfx/2572/2572-preview.mp3'),
+        error: new Audio('https://assets.mixkit.co/active_storage/sfx/2588/2588-preview.mp3')
+    };
+
+    function playSound(type) {
+        sounds[type].currentTime = 0;
+        sounds[type].play();
+    }
+
+    function openModal() {
+        playSound('select');
+        modal.classList.add('active');
+        currentSelection = 0;
+        updateSelection();
+    }
+
+    function closeModal() {
+        playSound('error');
+        modal.classList.remove('active');
+        navItems.forEach(item => item.classList.remove('selected'));
+        
+        // Останавливаем все звуки
+        Object.values(sounds).forEach(sound => {
+            sound.pause();
+            sound.currentTime = 0;
+        });
+    }
+
+    function updateSelection() {
+        navItems.forEach((item, index) => {
+            item.classList.toggle('selected', index === currentSelection);
+        });
+    }
+
+    function navigateToSelected() {
+        playSound('confirm');
+        const selected = navItems[currentSelection];
+        setTimeout(() => {
+            window.location.href = selected.dataset.url;
+        }, 500);
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (modal.classList.contains('active')) {
+            switch(e.key) {
+                case 'ArrowUp':
+                    e.preventDefault();
+                    playSound('select');
+                    currentSelection = Math.max(0, currentSelection - 1);
+                    updateSelection();
+                    break;
+                    
+                case 'ArrowDown':
+                    e.preventDefault();
+                    playSound('select');
+                    currentSelection = Math.min(navItems.length - 1, currentSelection + 1);
+                    updateSelection();
+                    break;
+                    
+                case 'Enter':
+                    e.preventDefault();
+                    navigateToSelected();
+                    break;
+                    
+                case 'Escape':
+                    e.preventDefault();
+                    closeModal();
+                    break;
+            }
+        }
+    });
+
+    window.onclick = function(e) {
+        if(e.target === modal) {
+            closeModal();
+        }
+    }
+</script>
+
+   <!-- змейка -->
+<div class="snake-terminal">
+  <div class="snake-header">
+    <span>змейка.exe :)</span>
+    <button id="snake-start">▶ PLAY</button>
+  </div>
+  <canvas id="snake-canvas" width="200" height="200"></canvas>
+</div>
+
+<script>
+let canvas = document.getElementById("snake-canvas");
+let ctx = canvas.getContext("2d");
+let box = 10;
+let snake = [{ x: 5 * box, y: 5 * box }];
+let direction = "RIGHT";
+let food = spawnFood();
+let game;
+
+function draw() {
+  ctx.fillStyle = "#111";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  for (let i = 0; i < snake.length; i++) {
+    ctx.fillStyle = i === 0 ? "#0f0" : "#070";
+    ctx.fillRect(snake[i].x, snake[i].y, box, box);
+  }
+
+  ctx.fillStyle = "#f00";
+  ctx.fillRect(food.x, food.y, box, box);
+
+  let head = { x: snake[0].x, y: snake[0].y };
+
+  if (direction === "LEFT") head.x -= box;
+  if (direction === "RIGHT") head.x += box;
+  if (direction === "UP") head.y -= box;
+  if (direction === "DOWN") head.y += box;
+
+  if (
+    head.x < 0 || head.x >= canvas.width ||
+    head.y < 0 || head.y >= canvas.height ||
+    collision(head, snake)
+  ) {
+    clearInterval(game);
+    return;
+  }
+
+  snake.unshift(head);
+  if (head.x === food.x && head.y === food.y) {
+    food = spawnFood();
+  } else {
+    snake.pop();
+  }
+}
+
+function spawnFood() {
+  return {
+    x: Math.floor(Math.random() * (canvas.width / box)) * box,
+    y: Math.floor(Math.random() * (canvas.height / box)) * box,
+  };
+}
+
+function collision(head, body) {
+  return body.some(segment => segment.x === head.x && segment.y === head.y);
+}
+
+document.addEventListener("keydown", e => {
+  if (["ArrowLeft", "ArrowUp", "ArrowRight", "ArrowDown"].includes(e.key)) {
+    e.preventDefault(); // блокируем прокрутку
+  }
+
+  if (e.key === "ArrowLeft" && direction !== "RIGHT") direction = "LEFT";
+  else if (e.key === "ArrowUp" && direction !== "DOWN") direction = "UP";
+  else if (e.key === "ArrowRight" && direction !== "LEFT") direction = "RIGHT";
+  else if (e.key === "ArrowDown" && direction !== "UP") direction = "DOWN";
+});
+
+
+document.getElementById("snake-start").addEventListener("click", () => {
+  snake = [{ x: 5 * box, y: 5 * box }];
+  direction = "RIGHT";
+  food = spawnFood();
+  clearInterval(game);
+  game = setInterval(draw, 100);
+});
+</script>
+<!-- змейка конец -->
+
+
+
+<!-- музыка-терминал -->
+
+<div class="music-terminal">
+  <div class="terminal-header">🎵 RETRO AUDIO TERMINAL</div>
+  <div class="track-info" id="trackName">// initializing.wav</div>
+  <div class="controls">
+    <button id="playBtn">▶</button>
+    <button id="stopBtn">❚❚</button>
+    <button id="randomBtn">🎲</button>
+  </div>
+  <audio id="audioPlayer" preload="auto"></audio>
+</div>
+
+<script>
+  const tracks = [
+    { name: "// SOUL_CORE_FRAGMENT.ogg", url: "вайб.mp3" },
+    { name: "// failed_hope_remix.mp3", url: "вайб2.mp3" },
+  ];
+
+  const audio = document.getElementById('audioPlayer');
+  const trackName = document.getElementById('trackName');
+  const playBtn = document.getElementById('playBtn');
+  const stopBtn = document.getElementById('stopBtn');
+  const randomBtn = document.getElementById('randomBtn');
+
+  let currentTrack = null;
+
+  function loadRandomTrack() {
+    const track = tracks[Math.floor(Math.random() * tracks.length)];
+    trackName.textContent = track.name;
+    audio.src = `music/${track.url}`; // Убедись, что музыка лежит в папке "music"
+    currentTrack = track;
+  }
+
+  playBtn.addEventListener('click', () => {
+    if (!currentTrack) loadRandomTrack();
+    audio.play();
+  });
+
+  stopBtn.addEventListener('click', () => {
+    audio.pause();
+    audio.currentTime = 0;
+  });
+
+  randomBtn.addEventListener('click', () => {
+    loadRandomTrack();
+    audio.play();
+  });
+
+  // Загрузи трек по умолчанию
+  loadRandomTrack();
+</script>
+
+<!-- Большой глаз-наблюдатель -->
+<div class="eye-observer-wrapper">
+  <div class="eye-large">
+    <div class="eye-large-ball"></div>
+  </div>
+  <p class="eye-large-quote">"Я наблюдаю..."</p>
+</div>
+
+<script>
+const eye = document.querySelector('.eye-large');
+const eyeBall = document.querySelector('.eye-large-ball');
+const quote = document.querySelector('.eye-large-quote');
+
+const phrases = [
+  "Я видел, как ты двигал курсор...",
+  "Курсор дрожит. Нервничаешь?",
+  "Опять ты с уставшим лицом, да?",
+  "Включи хоть музыку, послушаем вместе.",
+  "Думай перед кликом.",
+  "Я всё вижу."
+];
+
+// движение зрачка за курсором
+window.addEventListener('mousemove', (e) => {
+  const rect = eye.getBoundingClientRect();
+  const x = e.clientX - rect.left - rect.width / 2;
+  const y = e.clientY - rect.top - rect.height / 2;
+  const max = 20;
+  const clampedX = Math.max(-max, Math.min(max, x));
+  const clampedY = Math.max(-max, Math.min(max, y));
+  eyeBall.style.left = `${28 + clampedX * 0.4}px`;
+  eyeBall.style.top = `${28 + clampedY * 0.4}px`;
+});
+
+// моргание и смена фраз
+setInterval(() => {
+  eyeBall.style.visibility = 'hidden';
+  setTimeout(() => {
+    eyeBall.style.visibility = 'visible';
+    if (Math.random() < 0.7) {
+      quote.textContent = phrases[Math.floor(Math.random() * phrases.length)];
+    }
+  }, 140);
+}, 5000);
+</script>
+
+
+<div class="fnaf-control-panel">
+    <button class="fnaf-3d-btn">
+        <span class="btn-label">⏻</span>
+        <div class="btn-glitch"></div>
+        <div class="crt-overlay"></div>
+    </button>
+ <button class="fnaf-3d-btn open-sound-modal-btn">
+    <span class="btn-label">🕪</span>
+  </button>
+   <button class="fnaf-3d-btn">
+        <span class="btn-label">🇷🇺</span>
+        <div class="btn-glitch"></div>
+        <div class="crt-overlay"></div>
+    </button>
+</div>
+<!-- Модальное окно -->
+<div class="fnaf_modal crt-effect" id="soundModal" style="display: none;">
+    <div class="crt_glitch"></div>
+    <div class="modal_overlay">
+        <div class="modal_content">
+            <div class="scanline"></div>
+            <div class="noise"></div>
+            <h2 id="toggleHeaderSound" class="glitch-text">AUDIO CONTROL</h2>
+            <div class="status-display">
+                <span class="system-font">STATUS:</span>
+                <span id="soundStatus" class="blink">ACTIVE</span>
+            </div>
+            <div class="button-container">
+                <button class="system_btn danger" id="toggleSoundBtn">
+                    <span class="btn_label">🔇 DISABLE SOUND</span>
+                    <div class="btn_static"></div>
+                </button>
+                <button class="system_btn" id="closeModalBtn" style="cursor: pointer;">
+                    <span class="btn_label" style="cursor: pointer;">EXIT</span>
+                    <div class="btn_static"></div>
+                </button>
+            </div>
+            <div class="warning-message blink">
+                ⚠ WARNING: Пока что не работает, ESC чтобы выйти
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- картинка -->
+  <div class="container_image">
+<div class="img-sidebar">
+  <img src="../Mysite/icon/бум.png" alt="фотка silampix" style="width: 300px; height: 300px; margin-top: 20px; margin-bottom: 10px; margin-left: 70px;">
+</div>
+
+<div>
+    <p>FIXITFUN SYSTEM v0.8.7 - STATUS: OPERATIONAL</p>
+    <p>MONITOR: CRT-9X | INTERFACE: RETRO-UX | USER: LEVEL 4</p>
+    <p>© 2025 Foundation Systems. ALL RIGHTS OBSERVED.</p>
+  </div>
+</div>
+</div>
+</div>
+</aside>
+
+
+
+
+<main>
+  <div class="content">
+        <div class="logo-text">
+                <img src="../Mysite/icon/Scp(1).svg" alt="SCP" width="100" height="100">
+    </div>
+    <div class="scp-box">
+      <h2>Объект №: SCP-8888</h2>
+      <strong>Класс объекта:</strong> Safe<img src="../Mysite/icon/Safe.webp" alt="safe" class="safe"><br>
+      <strong>Уровень допуска:</strong> 3/8000<br>
+      <strong>Версия документа:</strong> 1.8.7 (Final Candidate)<br>
+      <strong>Последнее обновление:</strong> ██.██.2025
+    </div>
+
+    <div class="scp-box">
+      <h3>Особые условия содержания</h3>
+      <p>SCP-8888 должен содержаться в индивидуальной жилой ячейке, соответствующей протоколу разработки категории INDEV. Камера оснащается:</p>
+      <ul>
+        <li>Автономной системой генерации креативных решений</li>
+        <li>Подключением к IDE-контейнеру (JetBrains Rider, Visual Studio Code)</li>
+        <li>Регулярной подачей ингредиентов высокого вдохновения</li>
+        <li>Доступом к обучающим видео по Unity, Blender, Lua, FL Studio, DaVinci</li>
+        <li>Ежедневная подача высококлассного мёда</li>
+      </ul>
+      <p><strong>ВНИМАНИЕ:</strong> Любая перегрузка задачами без пищи и отдыха может вызвать аффективно-креативный срыв.</p>
+    </div>
+
+    <div class="scp-box">
+      <h3>Описание</h3>
+      <p>SCP-8888 (псевдоним: «СДВГ», внутренний ID: <em>FixitFun</em>) — Инди-разработчик, занимается инди-разработкой в течении █████. Является мужчиной европеоидной расы.
+      Согласно архивным записям, SCP-8888 родился в ████ году, и на момент постановки на содержание его возраст составлял ██ лет. Волосы субъекта спереди (светлые), остальная часть волос чёрная. Глаза голубые, рост и вес на момент написания данного документа составляли 178 сантиметра и 80кг килограмм соответственно. Никаких нестандартных физических характеристик у субъекта не выявлено; похоже, что во всех отношениях субъект является нормальным человеком в хорошем состоянии здоровья.
+      <br>
+      SCP-8888-A - ноутбук TRS-80 Model 100, произведённый в 1983 году. У SCP-8888-A не выявлено каких-либо аномальных физических свойств; предмет, по сути, является нормальным ноутбуком, который штатно функционирует в руках любого пользователя, за исключением SCP-8888.
+      В руках SCP-8888, SCP-8888-A, перестаёт быть старым ноутбуком и становится площадкой для аномальных. При этом SCP-8888 способен запускать и увеличивать характеристики ноутбука для своих нужд, без внутреннего апгрейда SCP-8888-A. По свидетельствам пользователей, запуская игры от этого пользователя, у них появляется аномальный интерес к играм этого разработчика. В руках других людей как SCP-8888-A, так и взаимодействием сделанные с ним, не имеют каких-либо аномальных свойств.
+      SCP-8888 продемонстрировал ограниченную способность воздействовать на пользователей, но наилучший результат достигается именно с использованием SCP-8888-A. На сегодняшний день только работа с данным устройством позволила SCP-8888 достичь заметных успехов в развитии его способности.
+      </p>
+      <p>Из увлечений вне кодинга у объекта:</p>
+      <ul>
+        <li>Прослушивание музыки 24/7</li>
+        <li>Прогулки после тяжёлого дня</li>
+        <li>Чтение различных книг (посмотреть список прочитанных книг вы можете введя команду в термина "books", там будет документ с ссылками)</li>
+        <li>Физические упражнения (особенно Турники)</li>
+      </ul>
+    </div>
+
+    <div class="scp-box">
+      <h3>Протокол «Пиршество»</h3>
+      <p>В случае понижения продуктивности разрешено использовать:</p>
+      <ul>
+        <li>Шоковую дозу вдохновения (саундтреки + артбуки)</li>
+        <li>Гастроусилитель Ω-9 (энергетик + любимый трек)</li>
+        <li>Сессию “GDC Talk + Dark Souls + геймдев-мемы”</li>
+      </ul>
+    </div>
+
+    <div class="scp-box">
+      <h3>Приложение A: Психологический профиль</h3>
+      <p>Объект стремится к дисциплине, но часто работает в режиме хаоса. Предпочтения: киберпанк, пиксельарт, SCP и Backrooms атмосфера </p>
+    </div>
+
+    <div class="scp-box">
+      <h3>Приложение B: Выдержка из протокола интервью 125-02-7526 от ██.██.████</h3>
+      <p>    
+      
+      <Начало протокола>
+<br>
+<br>
+    Д-р █████: Пожалуйста, представься и дай краткую информацию о себе, в том числе дату и место рождения.
+        <br>
+        <br>
+    SCP-8888: Ладно… Меня зовут ██████████ █████, я родился в ██████████, край ██████████, 9 июня ████.
+<br>
+<br>
+    Д-р █████: Хорошо. Первый вопрос: когда ты впервые заметил свою способность?
+<br>
+<br>
+    SCP-8888: Точно не знаю, по-моему, лет в шестнадцать. Помню, что смотрел на старый ноутбук и вдруг заметил, что появляется иконка игры о которой я думал.
+<br>
+<br>
+    Д-р █████: И что сделали родители, когда ты им об этом сказал?
+<br>
+<br>
+    SCP-8888: Просто ответили, что у меня слишком живое воображение.
+<br>
+<br>
+    Д-р █████: Когда ты обнаружил, что можешь создавать такие игры которые аномально влияют на пользователей?
+<br>
+<br>
+    SCP-8888: Когда мне было шестнадцать лет. придя домой я создал игру ██████████ и скинул его другу ██████████. После этого он проявил аномальный интерес, хотя играми никогда не интересовался
+<br>
+<br>
+    Д-р █████: Продолжай.
+<br>
+<br>
+    SCP-8888: С того случая я зафанател от игр на этом ноутбуке. Сначала это не всегда срабатывало с пользователями, но когда я обрёл навыки сторонних программ... <SCP-8888 улыбается> Когда у меня появились новые навыки, мне стало… легче взаимодействовать с ноутбуком.
+<br>
+<br>
+    Д-р █████: Это тот ноутбук, который мы обозначаем как SCP-8888-А? Твой личный?
+<br>
+<br>
+    SCP-8888: Да, сэр.
+<br>
+<br>
+    Д-р █████: На скольких играх ты можешь сосредоточиться одновременно?
+<br>
+<br>
+    SCP-8888: С моим ноутбуком пробовал пробовал по несколько штук, но наверняка не получится больше.
+<br>
+<br>
+    Д-р █████: Ты уже довольно долго пробыл в Фонде. Как твое впечатление?
+<br>
+<br>
+    < SCP-8888 не отвечает. >
+    <br>
+    <br>
+    Д-р █████: Ответь, пожалуйста. Мы не обижаемся на такие вещи.
+<br>
+<br>
+    SCP-8888: Ну, это вроде как… Новая тюрьма, новые надзиратели. Но здесь ко мне относятся гуманно, да и разрешают взаимодействовать с интернетом.
+<br>
+<br>
+    Д-р █████: Ты в последнее время был настроенной на сотрудничество.
+<br>
+<br>
+    SCP-8888: Я вообще довольно порядочный человек. Еще мне нравится экспериментировать. О некоторых штуках с играми я раньше даже не догадывался.
+<br>
+<br>
+    Д-р █████: Знаешь, почему я тебя обо всём этом спрашиваю, █████?
+<br>
+<br>
+    SCP-8888: Нет, сэр.
+<br>
+<br>
+    Д-р █████: Мы организуем особенную программу. Если дело выгорит, тебе можно будет покинуть Зону и свободно передвигаться по миру. Взамен мы попросим от тебя несколько услуг. Интересно?
+
+    <Конец протокола></p>
+    </div>
+
+    <div class="quote">
+      "Если SCP-8888 просит мёда — дайте. Иначе он выкатит новую игру и нам придётся её тестировать." — Др. ██████
+    </div>
+</div>
+</main>
+    </div>
+      </div>
+
+
+<script>
+let isPowerOff = false;
+let soundEnabled = true;
+
+document.addEventListener('DOMContentLoaded', () => {
+    const soundModal = document.getElementById('soundModal');
+    const toggleSoundBtn = document.getElementById('toggleSoundBtn');
+    const soundStatus = document.getElementById('soundStatus');
+    const headerToggle = document.getElementById('toggleHeaderSound');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+
+    // Вставка CSS-анимации
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes vibrate {
+          0%, 100% { transform: translate(0); }
+          20% { transform: translate(-2px, 2px); }
+          40% { transform: translate(2px, -2px); }
+          60% { transform: translate(-2px, -2px); }
+          80% { transform: translate(2px, 2px); }
+      }
+      .fnaf-control-panel * {
+          transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Тоггл звука
+    function toggleSound(e) {
+        if (e) e.stopPropagation();
+        soundEnabled = !soundEnabled;
+
+        if (soundStatus) {
+            soundStatus.textContent = soundEnabled ? 'ACTIVE' : 'DISABLED';
+            soundStatus.style.color = soundEnabled ? '#00ff66' : '#ff0044';
+        }
+
+        if (toggleSoundBtn) {
+            const label = toggleSoundBtn.querySelector('.btn_label');
+            if (label) {
+                label.textContent = soundEnabled ? '🔇 DISABLE SOUND' : '🔊 ENABLE SOUND';
+            } else {
+                toggleSoundBtn.textContent = soundEnabled ? '🔇 DISABLE SOUND' : '🔊 ENABLE SOUND';
+            }
+        }
+
+        document.querySelectorAll('audio, video').forEach(el => el.muted = !soundEnabled);
+    }
+
+    // Привязка событий
+    headerToggle?.addEventListener('click', toggleSound);
+    toggleSoundBtn?.addEventListener('click', toggleSound);
+
+    document.querySelectorAll("button").forEach(button => {
+        button.addEventListener("click", () => {
+            const clickSound = document.getElementById("click-sound");
+            if (clickSound && soundEnabled) {
+                clickSound.currentTime = 0;
+                clickSound.play();
+            }
+        });
+    });
+
+    // Открытие/закрытие модалки
+    document.querySelector('.open-sound-modal-btn')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        soundModal.style.display = 'block';
+    });
+
+    closeModalBtn?.addEventListener('click', () => {
+        soundModal.style.display = 'none';
+    });
+
+    soundModal?.addEventListener('click', (e) => {
+        if (e.target.id === 'soundModal') {
+            soundModal.style.display = 'none';
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && soundModal.style.display === 'block') {
+            soundModal.style.display = 'none';
+        }
+    });
+
+    // BIOS-загрузка
+    window.addEventListener("load", () => {
+        const biosSound = document.getElementById("bios-sound");
+        biosSound?.play();
+
+        const bios = document.getElementById("bios-screen");
+        const site = document.querySelector(".container");
+        site.style.display = "none";
+
+        setTimeout(() => {
+            bios.style.display = "none";
+            site.style.display = "block";
+        }, 7000);
+    });
+
+    // POWER OFF
+    document.querySelectorAll('.fnaf-3d-btn')[0]?.addEventListener('click', powerOff);
+});
+
+function powerOff(event) {
+    if (isPowerOff) return;
+    isPowerOff = true;
+
+    const btn = event.currentTarget;
+    const body = document.body;
+
+    btn.style.animation = 'vibrate 0.3s linear';
+    setTimeout(() => btn.style.animation = '', 300);
+
+    const playSound = () => {
+        if (!soundEnabled) return;
+        try {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(100, audioContext.currentTime);
+            gain.gain.setValueAtTime(0.1, audioContext.currentTime);
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.start();
+            osc.stop(audioContext.currentTime + 0.8);
+        } catch (e) {
+            console.error('Audio error:', e);
+        }
+    };
+
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: #000; opacity: 0; z-index: 9999; pointer-events: none;
+        transition: opacity 3s ease-out;
+    `;
+    body.appendChild(overlay);
+
+    setTimeout(() => {
+        playSound();
+        overlay.style.opacity = '0.8';
+
+        let flickerCount = 0;
+        const flicker = () => {
+            overlay.style.opacity = flickerCount % 2 === 0 ? '0.9' : '0.6';
+            flickerCount++;
+            if (flickerCount < 8) requestAnimationFrame(flicker);
+        };
+        flicker();
+
+        setTimeout(() => {
+            overlay.style.opacity = '1';
+            setTimeout(() => {
+                document.body.innerHTML = `
+                    <div style="position: fixed; top: 50%; left: 50%;
+                        transform: translate(-50%, -50%);
+                        color: #0f0; font-family: 'Courier New', monospace;
+                        text-align: center; text-shadow: 0 0 10px #0f0;">
+                        SYSTEM POWER OFF<br>[Перезапустите систему]
+                    </div>`;
+                try {
+                    window.open('', '_self').close();
+                } catch (e) {
+                    console.log('Browser prevented tab closing');
+                }
+            }, 2000);
+        }, 1500);
+    }, 50);
+}
+</script>
+
+
+
+
+
+
+</body>
+</html>

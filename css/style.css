@@ -1,0 +1,1637 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  background-color: #000000;
+  color: #00ff66;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+/* Кнопка вначале */
+
+   
+#start-btn {
+    padding: 15px 30px;
+    background: #001100;
+    border: 2px solid #00ff66;
+    color: #00ff66;
+    font-family: 'Courier New', monospace;
+    cursor: pointer;
+    font-size: 1.2em;
+    transition: all 0.3s;
+}
+
+#start-btn:hover {
+    background: #00ff66;
+    color: #000;
+    box-shadow: 0 0 15px #00ff66;
+}
+
+/* Кнопка конец */
+
+
+#start-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 99999;
+}
+
+
+ #bios-screen{
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: none;
+  align-items: left;
+  justify-content: left;
+  flex-direction: column;
+  z-index: 9999;
+}
+
+#os-boot-screen {
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: black;
+  color: #00ff66;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 60px;
+}
+
+.os-logo img {
+  width: 180px;
+  height: auto;
+  margin-top: 164px;
+}
+
+
+
+
+/* BIOS текст */
+#bios-screen {
+  background: black;
+  color: #00ff66;
+  display: flex; /* сразу виден */
+}
+
+#bios-text {
+  white-space: pre-wrap;
+  font-size: 20px;
+  line-height: 1.5em;
+  max-width: 90%;
+}
+
+/* OS Boot */
+#os-boot-screen {
+  background: black;
+  color: #00ff66;
+  font-size: 50px;
+  z-index: 9998;
+}
+
+.os-logo {
+  display: flex;
+  justify-content: center; /* Центрирование по горизонтали */
+  align-items: center; /* Центрирование по вертикали */
+  width: 100%;
+  margin-bottom: 20px; /* Отступ снизу для разделения логотипа и загрузчика */
+}
+
+/* Базовые стили для ЭЛТ-эффекта */
+.crt-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  animation: 
+    crt-power-on 3s ease-in-out forwards,
+    crt-flicker 8s infinite 3s;
+  overflow: hidden;
+}
+
+.crt-screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  animation: screen-fade-in 4s ease-out 1s forwards;
+}
+
+/* Эффект включения монитора */
+@keyframes crt-power-on {
+  0% {
+    transform: scale(1.2) perspective(1000px) rotateX(10deg);
+    filter: brightness(0) contrast(200%);
+  }
+  30% {
+    transform: scale(1) perspective(500px) rotateX(0);
+    filter: brightness(1.5) contrast(150%) saturate(200%);
+  }
+  100% {
+    filter: brightness(1) contrast(120%) saturate(100%);
+  }
+}
+
+/* Сканирующие линии */
+.crt-screen::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 255, 0, 0.1) 0.5%,
+    transparent 1%
+  );
+  animation: scanline 0.8s linear infinite;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Эффект виньетирования */
+.crt-screen::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  box-shadow: inset 0 0 80px rgba(0,0,0,0.7);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Анимация мерцания */
+@keyframes crt-flicker {
+  0%, 100% { filter: brightness(1) contrast(110%); }
+  2% { filter: brightness(1.1) contrast(130%); }
+  4% { filter: brightness(0.9) contrast(90%); }
+  6% { filter: brightness(1.05) contrast(115%); }
+  50% { filter: brightness(0.95) contrast(105%); }
+}
+
+/* Эффект затухания экрана */
+@keyframes screen-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Движение сканирующей линии */
+@keyframes scanline {
+  from { background-position: 0 0; }
+  to { background-position: 0 100vh; }
+}
+
+/* Добавляем RGB-разделение при глюках */
+.crt-overlay:hover { /* Можно заменить hover на класс для анимации */
+  animation: rgb-glitch 0.3s infinite;
+}
+
+@keyframes rgb-glitch {
+  0% {
+    filter: url(#rgb-shift);
+    transform: translate(0);
+  }
+  20% {
+    filter: url(#rgb-shift);
+    transform: translate(-2px, 1px);
+  }
+  40% {
+    filter: url(#rgb-shift);
+    transform: translate(1px, -2px);
+  }
+  60% {
+    filter: url(#rgb-shift);
+    transform: translate(0);
+  }
+  100% {
+    filter: url(#rgb-shift);
+    transform: translate(0);
+  }
+}
+
+.fnaf-loader-container {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin: 30px auto;
+  filter: drop-shadow(0 0 8px #0f3a);
+}
+
+.fnaf-loader {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 3px solid #0f3;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: fnaf-spin 1.5s linear infinite;
+}
+
+.fnaf-loader::before {
+  content: "";
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  border-radius: 50%;
+  border: 2px solid #0f32;
+  animation: pulse 2s ease-out infinite;
+}
+
+.fnaf-loader::after {
+  content: "";
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  right: 10%;
+  bottom: 10%;
+  background: radial-gradient(#0f3 15%, transparent 60%);
+  filter: blur(8px);
+  opacity: 0.4;
+}
+
+@keyframes fnaf-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.15); opacity: 0.7; }
+}
+
+
+
+
+
+
+.crt-effect {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: repeating-linear-gradient(
+        0deg,
+        rgba(0,255,102,0.05) 0px,
+        rgba(0,255,102,0.05) 1px,
+        transparent 2px,
+        transparent 3px
+    );
+            z-index: 999;
+            animation: scanline 4s linear infinite;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .biohazard-panel {
+            border: 3px solid var(--neon-green);
+            padding: 20px;
+            margin: 20px;
+            background: var(--terminal-bg);
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.2);
+        }
+
+        .entity-tracker {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .entity-card {
+            border: 2px solid var(--neon-green);
+            padding: 15px;
+            position: relative;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .entity-card:hover {
+            background: rgba(0, 255, 0, 0.05);
+            box-shadow: 0 0 15px var(--neon-green);
+        }
+
+        .vital-signs {
+            height: 100px;
+            background: #000;
+            border: 1px solid var(--neon-green);
+            margin: 15px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ecg-line {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent 0%,
+                transparent 90%,
+                var(--blood-red) 100%
+            );
+            background-size: 20px 100%;
+            animation: ecg 3s linear infinite;
+        }
+
+        .containment-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .status-led {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: var(--blood-red);
+            box-shadow: 0 0 10px var(--blood-red);
+            animation: pulse-red 1s infinite;
+        }
+
+        @keyframes scanline {
+            from { background-position: 0 0; }
+            to { background-position: 0 100vh; }
+        }
+
+        @keyframes ecg {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        @keyframes pulse-red {
+            50% { opacity: 0.3; }
+        }
+
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding-bottom: 10px;
+        }
+
+        .scp-logo {
+            width: 80px;
+            height: 80px;
+            filter: hue-rotate(90deg);
+            animation: logo-glitch 5s infinite;
+        }
+
+        @keyframes logo-glitch {
+            2% { transform: translate(2px, 0); }
+            4% { transform: translate(-1px, 2px); }
+            97% { opacity: 0.8; }
+            98% { transform: translate(0); }
+        }
+
+        .emergency-protocol {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            border: 2px solid var(--blood-red);
+            padding: 15px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .emergency-protocol:hover {
+            background: rgba(255, 0, 0, 0.1);
+            box-shadow: 0 0 20px var(--blood-red);
+        }
+
+.retro-btn {
+    position: relative;
+    padding: 12px 30px;
+    border: none;
+    background: linear-gradient(
+        145deg,
+        #2d2d2d,
+        #1a1a1a
+    );
+    color: #00ff66;
+    font-family: 'Courier New', monospace;
+    font-size: 16px;
+    cursor: pointer;
+    text-transform: uppercase;
+    text-shadow: 0 0 8px rgba(255,140,0,0.3);
+    border-radius: 4px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow:
+        0 4px 8px rgba(0,0,0,0.3),
+        inset 0 1px 1px rgba(255,140,0,0.1);
+}
+
+/* Металлическая рамка */
+.retro-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 3px;
+    border: 2px solid;
+    border-color: #4d2a00 #00ff66 #00ff66 #4d2a00;
+    mix-blend-mode: hard-light;
+    z-index: 2;
+}
+
+/* Внутренняя подсветка */
+.retro-btn::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    border-radius: 2px;
+    background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.4) 0%,
+        rgba(255,140,0,0.05) 50%,
+        rgba(0,0,0,0.3) 100%
+    );
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.5);
+}
+
+/* Анимации */
+.retro-btn:hover {
+    text-shadow: 0 0 15px rgb;
+    box-shadow:
+        0 6px 12px rgba(0,0,0,0.4),
+        inset 0 0 15px rgba(255,140,0,0.1);
+    transform: translateY(-1px);
+}
+
+.retro-btn:active {
+    transform: translateY(3px) scale(0.98);
+    box-shadow:
+        0 1px 2px rgba(0,0,0,0.2),
+        inset 0 0 10px rgba(255,140,0,0.3);
+}
+
+/* Эффект искр */
+@keyframes button-spark {
+    0% { opacity: 0; transform: scale(0); }
+    50% { opacity: 1; }
+    100% { opacity: 0; transform: scale(2); }
+}
+
+.retro-btn:active::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(
+        circle,
+        rgba(255,140,0,0.4) 0%,
+        transparent 70%
+    );
+    animation: button-spark 0.3s ease-out;
+    transform: translate(-50%, -50%);
+}
+
+/* CRT-эффект для всей панели */
+.header-buttons::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(255,140,0,0.03) 0px,
+        rgba(255,140,0,0.03) 1px,
+        transparent 1px,
+        transparent 3px
+    );
+    pointer-events: none;
+    mix-blend-mode: screen;
+    border-radius: 6px;
+}
+
+.status-indicator {
+    position: relative;
+    padding-right: 15px;
+}
+
+.status-indicator::after {
+    content: "▷";
+    position: absolute;
+    right: -12px;
+    animation: cursor-blink 1s infinite;
+}
+
+@keyframes cursor-blink {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+
+/* Эффект CRT-экрана */
+.container::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        rgba(0, 255, 100, 0.03) 50%,
+        transparent 50%
+    );
+    background-size: 100% 4px;
+    pointer-events: none;
+    animation: scanline 8s linear infinite;
+}
+
+@keyframes scanline {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 100%; }
+}
+
+/* Мигающий курсор */
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+.status-indicator::after {
+    content: ">";
+    color: #00ff66;
+    margin-left: 10px;
+    animation: blink 1s step-end infinite;
+}
+
+.flex-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  padding: 15px;
+  gap: 5px;
+}
+
+.main-layout {
+  display: flex;
+  flex: 1;
+}
+
+    .side-panel {
+      width: 30%;
+      border-left: 2px solid #444;
+      padding-left: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .side-panel img {
+      width: 90%;
+      border: 2px solid #777;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #222;
+      margin-bottom: 1rem;
+    }
+    .scp-box {
+      background: #111;
+      padding: 1rem;
+      border: 2px solid #333;
+      border-radius: 5px;
+      margin-bottom: 1rem;
+    }
+    h2, h3 {
+      color: #ffffff;
+      border-bottom: 1px dashed #555;
+      padding-bottom: 0.2rem;
+    }
+    .quote {
+      font-style: italic;
+      color: #aaaaaa;
+      border-left: 3px solid #444;
+      padding-left: 1rem;
+      margin-top: 1rem;
+    }
+
+.sidebar {
+  width: 300%;
+  background: #000; /* чёрный как в терминале */
+  color: #00ff66; /* типичный "кибер-зелёный" */
+  font-family: 'Share Tech Mono', monospace;
+  padding: 30px;
+  border: 2px solid #00ff66;
+  box-shadow: 0 0 10px rgba(0, 255, 153, 0.3);
+  position: relative;
+  overflow: hidden;
+  border-radius: 5px;
+}
+
+/* Лёгкий сканлайн эффект */
+.sidebar::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(1, 11, 7, 0.05),
+    rgba(0, 255, 153, 0.05) 2px,
+    transparent 2px,
+    transparent 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Мигающий индикатор ONLINE */
+.system-status p:nth-child(3)::after {
+  content: " ●";
+  color: #00ff66;
+  animation: blink 1s steps(2, start) infinite;
+}
+
+/* Курсор для даты */
+#dateDisplay::after {
+  content: "_";
+  animation: blink 0.9s steps(2, start) infinite;
+}
+
+/* Анимация мигания */
+@keyframes blink {
+  to {
+    opacity: 0;
+  }
+}
+
+
+.sidebar h3 {
+  color: #00ff66;
+  border-bottom: 1px solid rgba(0,255,153,0.2);
+  padding-bottom: 4px;
+  margin-top: 20px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background-color: #00ff66; /* Ярко-зелёный терминальный */
+  box-shadow: 0 0 4px #00ff66;
+  animation: pulse 1.5s infinite;
+  vertical-align: middle;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    box-shadow: 0 0 4px #00ff66;
+  }
+  50% {
+    opacity: 0.3;
+    box-shadow: 0 0 8px #00ff66;
+  }
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 4px #00ff66;
+  }
+}
+
+
+
+.sidebar li::before {
+  content: ">";
+  margin-right: 5px;
+  color: #00ff66;
+}
+
+.sidebar a {
+  color: #00ff66;
+  text-decoration: none;
+}
+
+.sidebar a:hover {
+  text-decoration: underline;
+}
+
+.sidebar span {
+  color: #00ff66;
+}
+
+.content {
+  position: relative;
+  color: #00ff66;
+  padding: 20px;
+  overflow-y: auto;
+  box-shadow: inset 0 0 20px #00ff66;
+  border-radius: 5px;
+}
+
+.safe {
+  width: 40px;
+  height: 40px;
+}
+
+ 
+
+    .psi-indicator {
+        height: 20px;
+        background: #000;
+        border: 2px solid #0f0;
+        position: relative;
+        margin: 10px 0;
+    }
+
+    .psi-bar {
+        height: 100%;
+        background: #0f03;
+        transition: width 1s;
+    }
+
+    @keyframes scan {
+        0% { left: -10%; }
+        100% { left: 110%; }
+    }
+
+    @keyframes dnaFlow {
+        0% { margin-left: -50%; }
+        100% { margin-left: 100%; }
+    }
+
+     .teletype-terminal {
+      background: #000;
+      padding: 10px;
+      border: 2px solid #0f0;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    .paper {
+      height: 200px;
+      overflow-y: auto;
+      background: repeating-linear-gradient(#000, #000 24px, #0f02 25px);
+      padding: 5px;
+      font-size: 16px;
+    }
+
+    .input-line {
+      margin-top: 5px;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 10px;
+      background: #0f0;
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+
+
+.button-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: inset 0 -3px 10px rgba(0,0,0,0.5);
+    margin-top: 30px;
+}
+
+.scanner {
+  width: 100%;
+  height: 80px;
+  background: #111;
+  position: relative;
+  overflow: hidden;
+}
+.scan-line {
+  position: absolute;
+  animation: scan 2s infinite linear;
+}
+@keyframes scan {
+  from { top: 0; }
+  to { top: 100%; }
+}
+
+matrix-decoder {
+  width: 300px;
+  height: 100px;
+  background: #000;
+  position: relative;
+  overflow: hidden;
+}
+
+
+.status-indicator {
+  color: #0f0;
+  font-family: 'Share Tech Mono', monospace;
+  padding: 5px 10px;
+  margin: 5px;
+  border: 1px solid #0f0;
+  display: inline-block;
+  cursor: pointer;
+  background: #000;
+  transition: background 0.3s;
+}
+.status-indicator:hover {
+  background: #0f02;
+}
+
+.led {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 8px;
+  border-radius: 50%;
+}
+.led-green { background: #0f0; }
+.led-yellow { background: #ff0; }
+.led-red { background: #f00; }
+
+
+       /* Статусные индикаторы */
+        .status-indicators {
+            padding: 20px;
+            border-bottom: 2px solid #0f0;
+            box-shadow: 0 0 20px #0f03;
+        }
+
+        .status-indicator {
+            padding: 15px 25px;
+            margin: 10px;
+            display: inline-block;
+            cursor: pointer;
+            background: #002200;
+            border: 2px solid #0f0;
+            border-radius: 3px;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px #0f03;
+        }
+
+        .status-indicator:hover {
+            background: #004400;
+            transform: scale(1.05);
+            box-shadow: 0 0 25px #0f05;
+        }
+
+        .led {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 10px;
+            box-shadow: 0 0 5px currentColor;
+        }
+
+        .led-green { background: #0f0; }
+
+        /* Модальное окно */
+        .fnaf-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            width: 800px;
+            height: 500px;
+            background: #000;
+            border: 3px solid #0f0;
+            box-shadow: 0 0 50px #0f07;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        .fnaf-modal.active {
+            display: block;
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        /* Фоновые эффекты */
+        .bg-warnings {
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .warning-text {
+            position: absolute;
+            font-size: 2.5em;
+            color: #f004;
+            animation: float 25s linear infinite;
+            text-shadow: 0 0 15px #f005;
+        }
+
+        .crt-overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(180deg, 
+                transparent 0%, 
+                rgba(0, 255, 0, 0.05) 0.5%, 
+                transparent 1%);
+            animation: scanline 2s linear infinite;
+            pointer-events: none;
+        }
+
+        .static-overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAIUlEQVQoU2NkYGAwZsAEzGOi/uHEDPxjYGBgYGJgYAAA5AIGLZzBZ1sAAAAASUVORK5CYII=');
+            opacity: 0.15;
+            animation: static 0.1s infinite;
+            pointer-events: none;
+        }
+
+        /* Навигация */
+        .navigation-panel {
+            padding: 30px;
+            border-right: 2px solid #0f0;
+            margin: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .nav-item {
+            padding: 15px;
+            margin: 15px 0;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            border: 1px solid #0f03;
+        }
+
+        .nav-item.selected {
+            background: #0f02;
+            text-shadow: 0 0 10px #0f0;
+            box-shadow: inset 0 0 10px #0f03;
+            transform: translateX(20px);
+        }
+
+        .nav-item::before {
+            content: '>';
+            position: absolute;
+            left: -25px;
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        .nav-item.selected::before {
+            opacity: 1;
+            text-shadow: 0 0 10px #0f0;
+        }
+
+        .confirm-btn {
+            background: #004400;
+            border: 2px solid #0f0;
+            color: #0f0;
+            padding: 20px 40px;
+            margin: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.2em;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+        }
+
+        .confirm-btn:hover::before {
+            left: 0;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 25px;
+            right: 30px;
+            cursor: pointer;
+            font-size: 28px;
+            transition: 0.3s;
+            padding: 5px;
+        }
+
+        .close-btn:hover {
+            text-shadow: 0 0 15px #f00;
+            color: #f00;
+        }
+
+        /* Анимации */
+        @keyframes float {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(100%); }
+        }
+
+        @keyframes scanline {
+            from { background-position: 0 0; }
+            to { background-position: 0 100%; }
+        }
+
+        @keyframes static {
+            0% { background-position: 0 0; }
+            100% { background-position: 100px 50px; }
+        }
+
+        @keyframes glitch {
+            2% { clip-path: inset(15% 0 30% 0); }
+            4% { clip-path: inset(5% 0 60% 0); }
+            97% { text-shadow: 3px 0 #0f06; }
+            98% { text-shadow: -3px 0 #f006; }
+        }
+
+
+
+button.glitch {
+    position: relative;
+    padding: 15px 25px;
+    border: none;
+    background: linear-gradient(
+        145deg,
+        #2d2d2d,
+        #1a1a1a
+    );
+    color: #00ff66;
+    font-family: 'Courier New', monospace;
+    font-size: 18px;
+    cursor: pointer;
+    text-shadow: 0 0 8px rgba(255,140,0,0.3);
+    border-radius: 6px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+    overflow: hidden;
+    box-shadow:
+        0 4px 8px rgba(0,0,0,0.3),
+        inset 0 1px 1px rgba(255,140,0,0.1);
+}
+
+/* Металлическая рамка */
+button.glitch::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 5px;
+    border: 2px solid;
+    border-color: 
+        #4d2a00 
+        #00ff66
+        #00ff66
+        #4d2a00;
+    mix-blend-mode: hard-light;
+    z-index: 2;
+}
+
+/* Внутренняя тень */
+button.glitch::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    border-radius: 4px;
+    background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.4) 0%,
+        rgba(255,140,0,0.05) 50%,
+        rgba(0,0,0,0.3) 100%
+    );
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+}
+
+/* Эффект нажатия */
+button.glitch:active {
+    transform: translateY(3px) scale(0.98);
+    box-shadow:
+        0 1px 2px rgba(0,0,0,0.2),
+        inset 0 0 8px rgba(255,140,0,0.2);
+}
+
+/* Свечение при наведении */
+button.glitch:hover {
+    text-shadow: 0 0 15px rgba(255,140,0,0.5);
+    box-shadow:
+        0 6px 12px rgba(0,0,0,0.4),
+        inset 0 0 15px rgba(255,140,0,0.1);
+}
+
+/* Искры при клике */
+@keyframes spark {
+    0% { opacity: 0; transform: scale(0); }
+    50% { opacity: 1; }
+    100% { opacity: 0; transform: scale(2); }
+}
+
+button.glitch:active::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(
+        circle,
+        rgba(255,140,0,0.4) 0%,
+        transparent 70%
+    );
+    animation: spark 0.3s ease-out;
+    transform: translate(-50%, -50%);
+}
+
+/* CRT-эффект поверх кнопок */
+.button-panel::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(255,140,0,0.03) 0px,
+        rgba(255,140,0,0.03) 1px,
+        transparent 1px,
+        transparent 3px
+    );
+    pointer-events: none;
+    mix-blend-mode: screen;
+}
+
+fnaf-control-panel {
+    background: #1a1a1a;
+    padding: 2rem;
+    border-radius: 4px;
+    position: relative;
+    font-family: 'Courier New', monospace;
+}
+
+.fnaf-3d-btn {
+    position: relative;
+    display: block;
+    width: 57.6px;
+    height: 60.4px;
+    margin: 15px auto;
+    padding: 20.8px;
+    background: #3d3d3d;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    transform-style: preserve-3d;
+    box-shadow: 
+        2px 2px 0px #6b6b6b,
+        -1px -1px 0px #2a2a2a,
+        inset 1px 1px 0px #666,
+        inset -1px -1px 0px #222;
+    overflow: hidden;
+}
+
+.fnaf-3d-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 2px solid #4a4a4a;
+    pointer-events: none;
+}
+
+.btn-label {
+    position: relative;
+    color: #00ff00;
+    text-shadow: 0 0 5px #00ff0077;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Глитч-эффект */
+.btn-glitch {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        45deg,
+        transparent 48%,
+        rgba(0,255,0,0.1) 50%,
+        transparent 52%
+    );
+    opacity: 0;
+    animation: glitch-animation 2s infinite;
+    mix-blend-mode: screen;
+}
+
+/* CRT эффект */
+.crt-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0,0,0,0.15) 0px,
+        rgba(0,0,0,0.15) 1px,
+        transparent 1px,
+        transparent 2px
+    );
+    pointer-events: none;
+    animation: crt-flicker 0.15s infinite;
+}
+
+/* Анимации */
+@keyframes glitch-animation {
+    0% { opacity: 0; transform: translate(0) }
+    5% { opacity: 0.3; transform: translate(-2px, 2px) }
+    10% { opacity: 0 }
+    15% { opacity: 0.3; transform: translate(2px, -2px) }
+    20% { opacity: 0 }
+    100% { opacity: 0 }
+}
+
+@keyframes crt-flicker {
+    0% { opacity: 0.9; }
+    50% { opacity: 1; }
+    100% { opacity: 0.9; }
+}
+
+/* Состояния кнопки */
+.fnaf-3d-btn:hover {
+    background: #4a4a4a;
+    box-shadow: 
+        1px 1px 0px #7b7b7b,
+        -2px -2px 0px #1a1a1a,
+        inset 2px 2px 0px #666,
+        inset -2px -2px 0px #222;
+}
+
+.fnaf-3d-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 
+        0px 0px 0px #6b6b6b,
+        0px 0px 0px #2a2a2a,
+        inset 1px 1px 0px #222,
+        inset -1px -1px 0px #666;
+}
+
+.fnaf-3d-btn:active .btn-label {
+    transform: translate(1px, 1px);
+}
+
+/* Модал-звук */
+
+.fnaf_modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle, rgba(0,20,0,0.95) 0%, rgba(0,5,0,0.95) 100%);
+    z-index: 9999;
+    font-family: 'Courier Prime', monospace;
+}
+
+.modal_overlay {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(0deg, transparent 24%, rgba(0,255,102,0.05) 25%, rgba(0,255,102,0.05) 26%, transparent 27%, transparent),
+        linear-gradient(90deg, transparent 24%, rgba(0,255,102,0.05) 25%, rgba(0,255,102,0.05) 26%, transparent 27%, transparent);
+    background-size: 4px 4px;
+}
+
+.modal_content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 10, 0, 0.9);
+    border: 3px solid #00ff66;
+    padding: 30px;
+    width: 400px;
+    box-shadow: 0 0 40px #00ff6633;
+    overflow: hidden;
+}
+
+/* CRT эффекты */
+.crt_glitch {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        repeating-linear-gradient(
+            0deg,
+            rgba(0,255,102,0.1) 0px,
+            rgba(0,255,102,0.1) 1px,
+            transparent 1px,
+            transparent 3px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            rgba(0,255,102,0.1) 0px,
+            rgba(0,255,102,0.1) 1px,
+            transparent 1px,
+            transparent 3px
+        );
+    animation: crt-flicker 0.15s infinite;
+}
+
+.glitch-text {
+    color: #00ff66;
+    font-size: 2em;
+    position: relative;
+}
+
+.scanline {
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(to bottom, 
+        transparent 0%, 
+        #00ff6688 50%, 
+        transparent 100%);
+    animation: scan 6s linear infinite;
+}
+
+.noise {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/png;base64,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");
+    opacity: 0.1;
+    animation: noise 1s steps(10) infinite;
+}
+
+
+
+/* Кнопки */
+.system_btn {
+    position: relative;
+    margin: 15px 0;
+    padding: 12px 25px;
+    background: rgba(0,15,0,0.8);
+    border: 2px solid #00ff66;
+    color: #00ff66;
+    font-size: 1.1em;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.3s;
+}
+
+.system_btn.danger:hover {
+    background: #00ff66;
+    color: #000;
+    box-shadow: 0 0 20px #00ff66;
+}
+
+.btn_static {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent 25%,
+        rgba(0,255,102,0.2) 50%,
+        transparent 75%
+    );
+    animation: static 3s infinite;
+}
+
+/* Анимации */
+@keyframes crt-flicker {
+    0% { opacity: 0.9; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+}
+
+@keyframes scan {
+    0% { top: -100%; }
+    100% { top: 100%; }
+}
+
+@keyframes noise {
+    0% { transform: translate(0,0); }
+    100% { background-position: 100% 100%; }
+}
+
+@keyframes static {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+@keyframes glitch {
+    0% { text-shadow: 2px 0 #ff00ff; }
+    25% { text-shadow: -2px 0 #00ffff; }
+    50% { text-shadow: 2px 0 #ffff00; }
+    75% { text-shadow: -2px 0 #ff0000; }
+    100% { text-shadow: 2px 0 #00ff00; }
+}
+
+.blink {
+    animation: blink 3s step-end infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+.fnaf_modal.show {
+    display: block;
+    animation: modalAppear 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes modalAppear {
+    0% { 
+        opacity: 0;
+        transform: scale(0.8) rotateX(45deg);
+    }
+    100% { 
+        opacity: 1;
+        transform: scale(1) rotateX(0);
+    }
+}
+
+/* змейка */
+
+.snake-terminal {
+  background: radial-gradient(circle at center, #000 60%, #050505 100%);
+  border: 2px solid #39ff14;
+  padding: 10px;
+  margin-top: 20px;
+  margin-left: 25px;
+  font-family: 'Courier New', Courier, monospace;
+  box-shadow:
+    0 0 5px #0f0,
+    0 0 15px #0f0 inset,
+    0 0 40px rgba(0, 255, 0, 0.2);
+  position: relative;
+  width: 240px;
+  border-radius: 4px;
+  filter: contrast(1.2);
+}
+
+.snake-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #39ff14;
+  font-size: 13px;
+  text-shadow: 0 0 2px #0f0;
+  margin-bottom: 8px;
+}
+
+#snake-start {
+  background: #0f0;
+  border: none;
+  color: #000;
+  cursor: pointer;
+  font-weight: bold;
+  padding: 3px 8px;
+  border-radius: 3px;
+  box-shadow: 0 0 3px #0f0;
+  transition: 0.2s ease;
+}
+
+#snake-start:hover {
+  background: #39ff14;
+  box-shadow: 0 0 5px #0f0, 0 0 10px #0f0;
+}
+
+canvas {
+  background: #111;
+  image-rendering: pixelated;
+  border: 1px solid #0f0;
+  box-shadow: inset 0 0 10px #0f0;
+  display: block;
+  margin: 0 auto;
+}
+
+
+/* музыка плеер */
+
+.music-terminal {
+    background: #111;
+    color: #0f0;
+    font-family: 'Courier New', monospace;
+    border: 2px solid #0f0;
+    border-radius: 8px;
+    padding: 1rem;
+    max-width: 300px;
+    margin-top: 1rem;
+    box-shadow: 0 0 15px #0f05;
+  }
+  .terminal-header {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.25rem;
+  }
+  .track-info {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+  .controls button {
+    background: transparent;
+    border: 1px solid #0f0;
+    color: #0f0;
+    font-size: 1rem;
+    padding: 0.25rem 0.5rem;
+    margin-right: 0.25rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  .controls button:hover {
+    background: #0f0;
+    color: #000;
+  }
+
+  /* глаз */
+
+.eye-observer-wrapper {
+  text-align: center;
+  font-family: monospace;
+  color: #00ff00;
+  font-size: 1em;
+  user-select: none;
+  width: 120px;
+  margin: 0 auto;
+}
+
+.eye-large {
+  width: 80px;
+  height: 80px;
+  border: 2px solid #00ff00;
+  border-radius: 50%;
+  background: #111;
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.eye-large-ball {
+  width: 24px;
+  height: 24px;
+  background: #00ff66;
+  border-radius: 50%;
+  position: absolute;
+  top: 28px;
+  left: 28px;
+  transition: all 0.1s ease-out;
+}
+
+.eye-large-quote {
+  margin-top: 10px;
+  min-height: 1.6em;
+  font-size: 1em;
+  opacity: 0.85;
+}
+
+.container_image {
+  position: relative;
+}

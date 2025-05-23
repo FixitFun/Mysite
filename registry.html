@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="../Mysite/css/registry.css">
+    <title>project</title>
+</head>
+<body>
+    <div class="fnaf-control-panel">
+    <h1 style="text-align: center;" >REGISTRY</h1>
+    <button class="fnaf-3d-btn open-sound-modal-btn">
+    <span class="btn-label"><a href="../Mysite/updates.html"><</a></span>
+  </button>
+    <button class="fnaf-3d-btn open-sound-modal-btn">
+    <span class="btn-label"><a href="../Mysite/index.html">Х</a></span>
+  </button>
+    <button class="fnaf-3d-btn open-sound-modal-btn">
+    <span class="btn-label"><a href="../Mysite/donate.html">></a></span>
+  </button>
+  </div>  
+    <main>
+      
+   <div class="crt-effect"></div>
+    <div class="system-status">
+        SYSTEM STATUS: <span class="glitch-text">OPERATIONAL</span><br>
+        ACCESS LEVEL: 4<br>
+        TIME: <span id="terminal-time">23:59:42</span>
+    </div>
+
+    <div class="terminal-header">
+        <h1>TERMINAL ACCESS :: REGISTRY LIST</h1>
+        <div class="header-line">---------------------------------------------</div>
+    </div>
+
+    <div class="projects-container">
+        <div class="project-item">
+            <span class="project-title"> <a>UPDATE: Crazy-Ride</a></span>
+        </div>
+
+        <div class="project-item" data-link="project2">
+            <span class="project-title glitch-text"><a>UPDATE: Crazy-Ride</a></span>
+        </div>
+
+        <div class="project-item" data-link="project3">
+            <span class="project-title"><a>UPDATE: Crazy-Ride</a></span>
+        </div>
+
+        <div class="project-item" data-link="project4">
+            <span class="project-title"><a>UPDATE: Crazy-Ride</a></span>
+        </div>
+        <div class="project-item" data-link="project4">
+            <span class="project-title"><a>UPDATE: Crazy-Ride</a></span>
+        </div>
+        <div class="project-item" data-link="project4">
+            <span class="project-title"><a>UPDATE: Crazy-Ride</a></span>
+        </div>
+        <div class="project-item" data-link="project4">
+            <span class="project-title"><a>UPDATE: Crazy-Ride</a></span>
+        </div>
+    </div>
+
+     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Системные часы
+            function updateClock() {
+                const now = new Date();
+                document.getElementById('terminal-time').textContent = 
+                    `${now.getHours().toString().padStart(2,'0')}:` +
+                    `${now.getMinutes().toString().padStart(2,'0')}:` +
+                    `${now.getSeconds().toString().padStart(2,'0')}`;
+            }
+            setInterval(updateClock, 1000);
+
+        })
+    </script>
+
+    </body>
+</html>

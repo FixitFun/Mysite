@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="../Mysite/css/projects.css">
+    <title>project</title>
+</head>
+<body>
+    <div class="fnaf-control-panel">
+    <h1 style="text-align: center;" >DONATE</h1>
+    <button class="fnaf-3d-btn open-sound-modal-btn">
+    <span class="btn-label"><a href="../Mysite/project.html"><</a></span>
+  </button>
+    <button class="fnaf-3d-btn open-sound-modal-btn">
+    <span class="btn-label"><a href="../Mysite/index.html">Х</a></span>
+  </button>
+    <button class="fnaf-3d-btn open-sound-modal-btn">
+    <span class="btn-label"><a href="../Mysite/updates.html">></a></span>
+  </button>
+  </div>  
+      
+   <div class="crt-effect"></div>
+    <div class="system-status">
+        SYSTEM STATUS: <span class="glitch-text">OPERATIONAL</span><br>
+        ACCESS LEVEL: 4<br>
+        TIME: <span id="terminal-time">23:59:42</span>
+    </div>
+
+    <div class="terminal-header">
+        <h1>TERMINAL ACCESS :: DONATE LIST</h1>
+        <div class="header-line">---------------------------------------------</div>
+    </div>
+
+    <div class="projects-container">
+        <div class="project-item">
+            <span class="project-title">BOOSTY</span>
+            <span class="project-desc">Legacy systems maintenance protocol</span>
+        </div>
+
+        <div class="project-item" data-link="project2">
+            <span class="project-title glitch-text">BOOSTY</span>
+            <span class="project-desc">[ACCESS DENIED]</span>
+        </div>
+
+        <div class="project-item" data-link="project3">
+            <span class="project-title">BOOSTY</span>
+            <span class="project-desc">Security systems override</span>
+        </div>
+
+        <div class="project-item" data-link="project4">
+            <span class="project-title">BOOSTY</span>
+            <span class="project-desc">Anomaly detection subsystem</span>
+        </div>
+        <div class="project-item" data-link="project4">
+            <span class="project-title">BOOSTY</span>
+            <span class="project-desc">Anomaly detection subsystem</span>
+        </div>
+        <div class="project-item" data-link="project4">
+            <span class="project-title">BOOSTY</span>
+            <span class="project-desc">Anomaly detection subsystem</span>
+        </div>
+        <div class="project-item" data-link="project4">
+            <span class="project-title">BOOSTY</span>
+            <span class="project-desc">Anomaly detection subsystem</span>
+        </div>
+    </div>
+
+     <script>
+          document.addEventListener('DOMContentLoaded', () => {
+            // Системные часы
+            function updateClock() {
+                const now = new Date();
+                document.getElementById('terminal-time').textContent = 
+                    `${now.getHours().toString().padStart(2,'0')}:` +
+                    `${now.getMinutes().toString().padStart(2,'0')}:` +
+                    `${now.getSeconds().toString().padStart(2,'0')}`;
+            }
+            setInterval(updateClock, 1000);
+
+            // Звуковые эффекты
+            function playSound(freq = 300, duration = 0.1) {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'square';
+                osc.frequency.value = freq;
+                gain.gain.value = 0.03;
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + duration);
+            }
+
+            // Обработка проектов
+             document.querySelectorAll('.project-item').forEach(item => {
+                item.addEventListener('mouseenter', () => {
+                    playSound(500);
+                    item.style.transform = 'translateX(10px)';
+                });
+
+                item.addEventListener('mouseleave', () => {
+                    item.style.transform = 'translateX(0)';
+                });
+
+                item.addEventListener('click', function() {
+                const link = this.querySelector('a');
+                const desc = this.querySelector('.project-desc');
+                const originalDesc = desc.textContent;
+
+                if(link) {
+        playSound(600);
+        desc.textContent = 'LOADING...';
+        
+        // Первый этап - загрузка
+        setTimeout(() => {
+            desc.textContent = 'OK...';
+            
+            // Второй этап - переход
+            setTimeout(() => {
+                window.location.href = link.href;
+            }, 1200);
+            
+        }, 900);
+                    
+                } else { // Если ссылки нет
+                    playSound(100); // Звук ошибки
+                    desc.textContent = '[ПОТОМ]';
+                    
+                    setTimeout(() => {
+                        desc.textContent = originalDesc;
+                    }, 1000);
+                }
+            });
+        });
+
+            // Случайные глитч-эффекты
+            setInterval(() => {
+                document.querySelectorAll('.project-title').forEach(title => {
+                    if(Math.random() < 0.03) {
+                        title.classList.add('glitch-text');
+                        setTimeout(() => title.classList.remove('glitch-text'), 50);
+                    }
+                });
+            }, 300);
+        });
+    </script>
+
+</body>
+</html>
