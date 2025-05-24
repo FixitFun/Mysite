@@ -1655,5 +1655,31 @@ canvas {
   position: relative;
 }
 
+#scp3d-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10000;
+  background: #000;
+}
 
+.scp3d-hud {
+  position: fixed;
+  bottom: 20px;
+  width: 100%;
+  color: #0f0;
+  font-family: 'Courier New', monospace;
+  padding: 10px;
+  text-align: center;
+  pointer-events: none;
+  text-shadow: 0 0 5px #0f0;
+}
 
+.enemy-counter {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  color: #f00;
+}

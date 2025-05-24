@@ -3,12 +3,18 @@
 <head>
     <meta charset="UTF-8" />
     <title>FixitFun</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/PointerLockControls.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
     <link rel="stylesheet" href="/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <audio id="click-sound" src="/sound/negromkiy-korotkiy-klik.mp3" preload="auto"></audio>
     <audio id="poweroff-sound" src="/sound/Звук выключения экрана.mp3" preload="auto"></audio>
     <audio id="bios-sound" src="/sound/Включение ноутбука шум вентиляторов выключение.mp3" preload="auto"></audio>
     <audio id="boot-sound" src="/sound/15949.mp3" preload="auto"></audio>
+    <script src="https://cdn.jsdelivr.net/npm/js-dos@6.22.6/dist/js-dos.js"></script>
     <link rel="shortcut icon" href="/icon/бум.png" type="image/png">
 </head>
 <body>
@@ -293,13 +299,14 @@ const startBiosSequence = () => {
       printLine("- version — показать версию SCP-OS");
       printLine("- books — Скачать документ");
       printLine("- fortune — получить случайную истину");
-      printLine("- matrix - Запускает эффект матрицы")
-      printLine("- redalert - Активирует режим тревоги с глитч-эффектом")
-      printLine("- hackerman - Включает хакерский интерфейс")
-      printLine("- decode - Декодирует секретное сообщение")
-      printLine("- rick - Сюрприз для настоящих исследователей")
-      printLine("- asciiart - Показывает ASCII-арт SCP")
-      printLine("- snake - Запускает snake.exe")
+      printLine("- matrix - Запускает эффект матрицы");
+      printLine("- redalert - Активирует режим тревоги с глитч-эффектом");
+      printLine("- hackerman - Включает хакерский интерфейс");
+      printLine("- decode - Декодирует секретное сообщение");
+      printLine("- rick - Сюрприз для настоящих исследователей");
+      printLine("- asciiart - Показывает ASCII-арт SCP");
+      printLine("- snake - Запускает snake.exe");
+      printLine("- doom - Запускает doom.exe");
       break;
 
     case "bio":
@@ -400,6 +407,16 @@ const startBiosSequence = () => {
       launchSnakeGame();
       break;
 
+    case "doom.exe":
+    case "doom":
+      printLine("Запуск игры DOOM...");
+      const game = new SCPDoom3D();
+      document.body.appendChild(game.container);
+      game.enableControls();
+      printLine("АКТИВАЦИЯ ПРОТОКОЛА SCP-8802...");
+      printLine("ОБНАРУЖЕНЫ SCP-939: 5 ЕДИНИЦ");
+      break;
+
     default:
       printLine("Неизвестная команда. Введите 'help'.");
   }
@@ -482,6 +499,501 @@ const startBiosSequence = () => {
     oscillator.start();
     setTimeout(() => oscillator.stop(), 200);
   }
+
+function launchSnakeGame() {
+  // Создаём модальное окно
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  modal.innerHTML = `
+    <div class="modal-content">
+      <span class="close-btn">&times;</span>
+      <h2>🐍 Игра Змейка</h2>
+      <canvas id="snake-canvas" width="400" height="400"></canvas>
+      <p>Управление: Стрелки или WASD. Ешь еду, не врежься в стены или в себя!</p>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  // Стили модалки
+  const style = document.createElement('style');
+  style.textContent = `
+    .modal {
+      display: flex;
+      position: fixed;
+      z-index: 9999;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: #222; color: #0f0; padding: 20px;
+      border-radius: 10px; text-align: center;
+      max-width: 500px; width: 100%;
+    }
+    .close-btn {
+      position: absolute; top: 10px; right: 20px;
+      cursor: pointer; font-size: 24px; color: red;
+    }
+    canvas {
+      background: black; display: block; margin: 0 auto;
+    }
+  `;
+  document.head.appendChild(style);
+
+  // Закрытие модалки
+  modal.querySelector('.close-btn').onclick = () => modal.remove();
+
+  // Запуск змейки
+  startSnake(document.getElementById('snake-canvas'));
+}
+
+
+
+
+function startSnake(canvas) {
+  const ctx = canvas.getContext('2d');
+  const gridSize = 20;
+  const tileCount = canvas.width / gridSize;
+  let snake = [{x: 10, y: 10}];
+  let apple = {x: 15, y: 15};
+  let dx = 0, dy = 0;
+  let gameLoop;
+
+  document.addEventListener('keydown', e => {
+    switch (e.key) {
+      case 'ArrowUp': case 'w': dy = -1; dx = 0; break;
+      case 'ArrowDown': case 's': dy = 1; dx = 0; break;
+      case 'ArrowLeft': case 'a': dx = -1; dy = 0; break;
+      case 'ArrowRight': case 'd': dx = 1; dy = 0; break;
+    }
+  });
+
+  function game() {
+    const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+    if (head.x < 0 || head.y < 0 || head.x >= tileCount || head.y >= tileCount || snake.slice(1).some(s => s.x === head.x && s.y === head.y)) {
+      clearInterval(gameLoop);
+      alert('Игра окончена!');
+      return;
+    }
+
+    snake.unshift(head);
+
+    if (head.x === apple.x && head.y === apple.y) {
+      // Новое яблоко появляется в случайной позиции
+      do {
+        apple = {
+          x: Math.floor(Math.random() * tileCount),
+          y: Math.floor(Math.random() * tileCount)
+        };
+      } while (snake.some(s => s.x === apple.x && s.y === apple.y));
+    } else {
+      snake.pop();
+    }
+
+    // Отрисовка
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = 'lime';
+    snake.forEach(s => ctx.fillRect(s.x * gridSize, s.y * gridSize, gridSize - 2, gridSize - 2));
+
+    ctx.fillStyle = 'red';
+    ctx.fillRect(apple.x * gridSize, apple.y * gridSize, gridSize - 2, gridSize - 2);
+  }
+
+  gameLoop = setInterval(game, 100);
+}
+
+
+class SCPDoom3D {
+  constructor() {
+    this.container = document.createElement('div');
+    this.container.id = 'scp3d-container';
+    this.enemies = [];
+    this.bullets = [];
+    
+    this.weapons = {
+      pistol: {
+        damage: 30,
+        fireRate: 500,
+        ammo: 50,
+        color: 0x00ff00,
+        sound: 'https://www.101soundboards.com/sounds/697323-aa-12-single',
+        model: null
+      },
+      shotgun: {
+        damage: 100,
+        fireRate: 1000,
+        ammo: 20,
+        color: 0xff4500,
+        spread: 0.2,
+        sound: 'https://freesound.org/data/previews/511/511664_10702966-lq.mp3',
+        model: null
+      }
+    };
+
+    this.currentWeapon = 'pistol';
+    this.playerHealth = 100;
+    this.ammoPickups = [];
+    this.healthKits = [];
+
+    this.initDOM();
+    this.initScene();
+    this.initSound();
+    this.generatePickups();
+    this.initWeaponModels();
+  }
+
+  initDOM() {
+    this.container.innerHTML = `
+      <div class="scp3d-hud">
+        <div>ЗДОРОВЬЕ: ${this.playerHealth}%</div>
+        <div>ПАТРОНЫ: ${this.weapons[this.currentWeapon].ammo}</div>
+        <div>ОРУЖИЕ: ${this.currentWeapon.toUpperCase()}</div>
+        <div style="color:#f00">SCP-939 Осталось: <span id="enemy-count">0</span></div>
+        <div>[1] Пистолет | [2] Дробовик | [SPACE] Огонь | [ESC] Выход</div>
+      </div>
+    `;
+    this.enemyCounter = this.container.querySelector('#enemy-count');
+  }
+
+  initScene() {
+    this.scene = new THREE.Scene();
+    this.camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.container.prepend(this.renderer.domElement);
+
+    const textureLoader = new THREE.TextureLoader();
+    this.wallTexture = textureLoader.load('https://i.imgur.com/8QZQZwW.png');
+    this.floorTexture = textureLoader.load('https://i.imgur.com/7Vn5rNq.png');
+
+    const light = new THREE.DirectionalLight(0xffffff, 0.8);
+    light.position.set(0, 10, 0);
+    this.scene.add(light);
+
+    this.generateSCPLevel();
+    this.spawnEnemies(5);
+
+    this.camera.position.set(5, 1.6, 5);
+    this.controls = new THREE.PointerLockControls(this.camera, this.renderer.domElement);
+
+    this.animate();
+  }
+
+  initWeaponModels() {
+    const loader = new THREE.GLTFLoader();
+
+  // Загрузка модели пистолета
+  loader.load('https://p.turbosquid.com/ts-thumb/BC/rdIqg5/aO/capture7/png/1663968565/1920x1080/fit_q87/5b9382c7462650c2731dece3950b0fb9be5f0c69/capture7.jpg', (gltf) => {
+    this.weapons.pistol.model = gltf.scene;
+    
+    // Настройка позиции и масштаба
+    this.weapons.pistol.model.scale.set(0.1, 0.1, 0.1);
+    this.weapons.pistol.model.position.set(0.5, -0.5, -1);
+    this.weapons.pistol.model.rotation.set(0, Math.PI, 0);
+    
+    this.scene.add(this.weapons.pistol.model);
+    this.weapons.pistol.model.visible = false;
+  }, undefined, (error) => {
+    console.error('Error loading pistol model:', error);
+  });
+
+  // Загрузка модели дробовика
+  loader.load('https://cdn.yoursite.com/models/shotgun.glb', (gltf) => {
+    this.weapons.shotgun.model = gltf.scene;
+    
+    // Настройка позиции и масштаба
+    this.weapons.shotgun.model.scale.set(0.08, 0.08, 0.08);
+    this.weapons.shotgun.model.position.set(0.7, -0.6, -1.2);
+    this.weapons.shotgun.model.rotation.set(0, Math.PI, 0);
+    
+    this.scene.add(this.weapons.shotgun.model);
+    this.weapons.shotgun.model.visible = false;
+  }, undefined, (error) => {
+    console.error('Error loading shotgun model:', error);
+  });
+
+  this.updateWeaponDisplay();
+}
+
+  updateWeaponDisplay() {
+    Object.values(this.weapons).forEach(weapon => {
+      if(weapon.model) weapon.model.visible = false;
+    });
+    if(this.weapons[this.currentWeapon].model) {
+      this.weapons[this.currentWeapon].model.visible = true;
+    }
+  }
+
+  initSound() {
+    this.sounds = {
+      pistol: new Howl({ src: [this.weapons.pistol.sound], volume: 0.7 }),
+      shotgun: new Howl({ src: [this.weapons.shotgun.sound], volume: 0.9 }),
+      pickup: new Howl({ src: 'https://freesound.org/data/previews/427/427558_8414420-lq.mp3' }),
+      enemyDeath: new Howl({ src: 'https://freesound.org/data/previews/600/600512_11861866-lq.mp3' })
+    };
+  }
+
+  generatePickups() {
+    const pickupGeometry = new THREE.SphereGeometry(0.3);
+    
+    // Патроны
+    const ammoMaterial = new THREE.MeshPhongMaterial({ 
+      color: 0xFFFF00,
+      emissive: 0x444400
+    });
+    
+    for(let i = 0; i < 10; i++) {
+      const ammo = new THREE.Mesh(pickupGeometry, ammoMaterial);
+      ammo.position.set(Math.random() * 40 - 20, 0.5, Math.random() * 40 - 20);
+      this.scene.add(ammo);
+      this.ammoPickups.push(ammo);
+    }
+
+    // Аптечки
+    const healthMaterial = new THREE.MeshPhongMaterial({
+      color: 0xFF0000,
+      emissive: 0x400000
+    });
+    
+    for(let i = 0; i < 5; i++) {
+      const health = new THREE.Mesh(pickupGeometry, healthMaterial);
+      health.position.set(Math.random() * 40 - 20, 0.5, Math.random() * 40 - 20);
+      this.scene.add(health);
+      this.healthKits.push(health);
+    }
+  }
+
+  generateSCPLevel() {
+    const wallGeometry = new THREE.BoxGeometry(1, 3, 1);
+    const wallMaterial = new THREE.MeshPhongMaterial({ 
+      map: this.wallTexture,
+      bumpScale: 0.05
+    });
+
+    for(let x = -10; x <= 10; x += 2) {
+      for(let z = -10; z <= 10; z += 2) {
+        if (Math.random() > 0.7) {
+          const wall = new THREE.Mesh(wallGeometry, wallMaterial);
+          wall.position.set(x, 1.5, z);
+          this.scene.add(wall);
+        }
+      }
+    }
+
+    const floor = new THREE.Mesh(
+      new THREE.PlaneGeometry(100, 100),
+      new THREE.MeshPhongMaterial({ 
+        map: this.floorTexture,
+        repeat: [20, 20]
+      })
+    );
+    floor.rotation.x = -Math.PI / 2;
+    this.scene.add(floor);
+  }
+
+  spawnEnemies(count) {
+    const enemyGeometry = new THREE.SphereGeometry(0.5, 8, 8);
+    const enemyMaterial = new THREE.MeshPhongMaterial({ 
+      color: 0xff0000,
+      emissive: 0x440000
+    });
+
+    for(let i = 0; i < count; i++) {
+      const enemy = new THREE.Mesh(enemyGeometry, enemyMaterial);
+      enemy.position.set(
+        Math.random() * 20 - 10,
+        0.5,
+        Math.random() * 20 - 10
+      );
+      enemy.health = 100;
+      this.scene.add(enemy);
+      this.enemies.push(enemy);
+    }
+    this.updateEnemyCounter();
+  }
+
+  updateEnemyCounter() {
+    this.enemyCounter.textContent = this.enemies.length;
+  }
+
+  animate() {
+    requestAnimationFrame(() => this.animate());
+    
+    // Обновление позиции оружия
+    if(this.weapons[this.currentWeapon].model) {
+      this.weapons[this.currentWeapon].model.position.copy(this.camera.position);
+      this.weapons[this.currentWeapon].model.rotation.copy(this.camera.rotation);
+      this.weapons[this.currentWeapon].model.translateX(0.3);
+      this.weapons[this.currentWeapon].model.translateY(-0.2);
+      this.weapons[this.currentWeapon].model.translateZ(-0.5);
+    }
+
+    this.enemies.forEach((enemy, index) => {
+      const direction = new THREE.Vector3()
+        .subVectors(this.camera.position, enemy.position)
+        .normalize();
+      enemy.position.add(direction.multiplyScalar(0.01));
+
+      if(enemy.position.distanceTo(this.camera.position) < 1.5) {
+        this.playerHealth -= 0.5;
+        this.updateHUD();
+        if(this.playerHealth <= 0) {
+          this.destroy();
+          printLine("ВЫ УНИЧТОЖЕНЫ. SCP-939 ПРЕВОСХОДЯТ ВАС.");
+        }
+      }
+    });
+
+    this.bullets.forEach((bullet, bulletIndex) => {
+      bullet.position.add(bullet.velocity);
+      
+      this.enemies.forEach((enemy, enemyIndex) => {
+        if(bullet.position.distanceTo(enemy.position) < 1) {
+          enemy.health -= bullet.damage;
+          
+          if(enemy.health <= 0) {
+            this.scene.remove(enemy);
+            this.enemies.splice(enemyIndex, 1);
+            this.sounds.enemyDeath.play();
+            this.updateEnemyCounter();
+          }
+          
+          this.scene.remove(bullet);
+          this.bullets.splice(bulletIndex, 1);
+        }
+      });
+    });
+
+    this.renderer.render(this.scene, this.camera);
+  }
+
+  updateHUD() {
+    this.container.querySelector('.scp3d-hud').innerHTML = `
+      <div>ЗДОРОВЬЕ: ${Math.max(0, this.playerHealth)}%</div>
+      <div>ПАТРОНЫ: ${this.weapons[this.currentWeapon].ammo}</div>
+      <div>ОРУЖИЕ: ${this.currentWeapon.toUpperCase()}</div>
+      <div style="color:#f00">SCP-939 Осталось: ${this.enemies.length}</div>
+      <div>[1] Пистолет | [2] Дробовик | [SPACE] Огонь | [ESC] Выход</div>
+    `;
+  }
+
+  enableControls() {
+    this.controls.lock();
+    document.addEventListener('keydown', this.handleKey.bind(this));
+  }
+
+  handleKey(e) {
+    const moveSpeed = 0.2;
+    const direction = new THREE.Vector3();
+
+    switch(e.key) {
+      case 'ArrowUp': direction.z -= moveSpeed; break;
+      case 'ArrowDown': direction.z += moveSpeed; break;
+      case 'ArrowLeft': direction.x -= moveSpeed; break;
+      case 'ArrowRight': direction.x += moveSpeed; break;
+      case ' ': this.fireWeapon(); break;
+      case 'Escape': this.destroy(); break;
+      case '1': 
+        this.currentWeapon = 'pistol'; 
+        this.updateWeaponDisplay();
+        this.updateHUD();
+        break;
+      case '2': 
+        this.currentWeapon = 'shotgun'; 
+        this.updateWeaponDisplay();
+        this.updateHUD();
+        break;
+    }
+
+    this.camera.position.add(direction);
+    this.checkPickups();
+  }
+
+  fireWeapon() {
+    const weapon = this.weapons[this.currentWeapon];
+    
+    if(weapon.ammo <= 0) {
+      printLine("Нет патронов! Ищи желтые сферы на карте!");
+      return;
+    }
+
+    weapon.ammo--;
+    this.sounds[this.currentWeapon].play();
+
+    if(this.currentWeapon === 'shotgun') {
+      for(let i = 0; i < 8; i++) this.createBullet(weapon.damage / 4, weapon.spread);
+    } else {
+      this.createBullet(weapon.damage);
+    }
+
+    this.updateHUD();
+  }
+
+  createBullet(damage, spread = 0) {
+    const bullet = new THREE.Mesh(
+      new THREE.SphereGeometry(0.1),
+      new THREE.MeshBasicMaterial({ color: this.weapons[this.currentWeapon].color })
+    );
+    
+    bullet.position.copy(this.camera.position);
+    const direction = new THREE.Vector3(0, 0, -1)
+      .applyQuaternion(this.camera.quaternion)
+      .add(new THREE.Vector3(
+        (Math.random() - 0.5) * spread,
+        (Math.random() - 0.5) * spread,
+        0
+      ))
+      .multiplyScalar(0.5);
+
+    bullet.velocity = direction;
+    bullet.damage = damage;
+    this.scene.add(bullet);
+    this.bullets.push(bullet);
+
+    setTimeout(() => {
+      this.scene.remove(bullet);
+      this.bullets = this.bullets.filter(b => b !== bullet);
+    }, 2000);
+  }
+
+  checkPickups() {
+    const playerPos = this.camera.position;
+    
+    this.ammoPickups.forEach((ammo, index) => {
+      if(playerPos.distanceTo(ammo.position) < 1) {
+        this.weapons[this.currentWeapon].ammo += 30;
+        this.scene.remove(ammo);
+        this.ammoPickups.splice(index, 1);
+        this.sounds.pickup.play();
+        this.updateHUD();
+      }
+    });
+
+    this.healthKits.forEach((health, index) => {
+      if(playerPos.distanceTo(health.position) < 1) {
+        this.playerHealth = Math.min(100, this.playerHealth + 30);
+        this.scene.remove(health);
+        this.healthKits.splice(index, 1);
+        this.sounds.pickup.play();
+        this.updateHUD();
+      }
+    });
+  }
+
+  destroy() {
+    this.renderer.dispose();
+    this.container.remove();
+    printLine("СОЕДИНЕНИЕ С SCP-8802 ПРЕРВАНО");
+  }
+}
+
+
+
+
   </script>
 
 
@@ -631,95 +1143,12 @@ const startBiosSequence = () => {
             closeModal();
         }
     }
+
+
+
 </script>
 
-   <!-- змейка -->
-<div class="snake-terminal">
-  <div class="snake-header">
-    <span>змейка.exe :)</span>
-    <button id="snake-start">▶ PLAY</button>
-  </div>
-  <canvas id="snake-canvas" width="200" height="200"></canvas>
-</div>
-
-<script>
-let canvas = document.getElementById("snake-canvas");
-let ctx = canvas.getContext("2d");
-let box = 10;
-let snake = [{ x: 5 * box, y: 5 * box }];
-let direction = "RIGHT";
-let food = spawnFood();
-let game;
-
-function draw() {
-  ctx.fillStyle = "#111";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  for (let i = 0; i < snake.length; i++) {
-    ctx.fillStyle = i === 0 ? "#0f0" : "#070";
-    ctx.fillRect(snake[i].x, snake[i].y, box, box);
-  }
-
-  ctx.fillStyle = "#f00";
-  ctx.fillRect(food.x, food.y, box, box);
-
-  let head = { x: snake[0].x, y: snake[0].y };
-
-  if (direction === "LEFT") head.x -= box;
-  if (direction === "RIGHT") head.x += box;
-  if (direction === "UP") head.y -= box;
-  if (direction === "DOWN") head.y += box;
-
-  if (
-    head.x < 0 || head.x >= canvas.width ||
-    head.y < 0 || head.y >= canvas.height ||
-    collision(head, snake)
-  ) {
-    clearInterval(game);
-    return;
-  }
-
-  snake.unshift(head);
-  if (head.x === food.x && head.y === food.y) {
-    food = spawnFood();
-  } else {
-    snake.pop();
-  }
-}
-
-function spawnFood() {
-  return {
-    x: Math.floor(Math.random() * (canvas.width / box)) * box,
-    y: Math.floor(Math.random() * (canvas.height / box)) * box,
-  };
-}
-
-function collision(head, body) {
-  return body.some(segment => segment.x === head.x && segment.y === head.y);
-}
-
-document.addEventListener("keydown", e => {
-  if (["ArrowLeft", "ArrowUp", "ArrowRight", "ArrowDown"].includes(e.key)) {
-    e.preventDefault(); // блокируем прокрутку
-  }
-
-  if (e.key === "ArrowLeft" && direction !== "RIGHT") direction = "LEFT";
-  else if (e.key === "ArrowUp" && direction !== "DOWN") direction = "UP";
-  else if (e.key === "ArrowRight" && direction !== "LEFT") direction = "RIGHT";
-  else if (e.key === "ArrowDown" && direction !== "UP") direction = "DOWN";
-});
-
-
-document.getElementById("snake-start").addEventListener("click", () => {
-  snake = [{ x: 5 * box, y: 5 * box }];
-  direction = "RIGHT";
-  food = spawnFood();
-  clearInterval(game);
-  game = setInterval(draw, 100);
-});
-</script>
-<!-- змейка конец -->
-
+   
 
 
 <!-- музыка-терминал -->
@@ -894,7 +1323,7 @@ setInterval(() => {
     </div>
     <div class="scp-box">
       <h2>Объект №: SCP-8888</h2>
-      <strong>Класс объекта:</strong> Safe<img src="../Mysite/icon/Safe.webp" alt="safe" class="safe"><br>
+      <strong>Класс объекта:</strong> Safe<img src="/icon/Safe.webp" alt="safe" class="safe"><br>
       <strong>Уровень допуска:</strong> 3/8000<br>
       <strong>Версия документа:</strong> 1.8.7 (Final Candidate)<br>
       <strong>Последнее обновление:</strong> ██.██.2025
